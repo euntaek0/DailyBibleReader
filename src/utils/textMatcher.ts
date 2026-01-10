@@ -4,6 +4,7 @@ export interface MatchResult {
   totalCount: number;
   isMatch: boolean;
   status: "READ" | "PARTIAL" | "NOT_READ";
+  matchedIndices: boolean[];
 }
 
 /**
@@ -53,32 +54,37 @@ export function tokenize(text: string): string[] {
  * - score = hitCount / totalWordCount
  */
 export function calculateScore(targetVerse: string, inputTranscript: string): MatchResult {
-  const targetTokens = tokenize(targetVerse);
+  // IMPORTANT: We must split the ORIGINAL verse by space to preserve order for indices.
+  // Then we normalize each token for comparison.
+  const originalTokens = targetVerse.split(/\s+/);
   const normalizedInput = normalize(inputTranscript); // Normalize input too for fair comparison
+  const matchedIndices: boolean[] = new Array(originalTokens.length).fill(false);
 
-  if (targetTokens.length === 0) {
-    return { score: 0, matchCount: 0, totalCount: 0, isMatch: false, status: "NOT_READ" };
+  if (originalTokens.length === 0) {
+    return { score: 0, matchCount: 0, totalCount: 0, isMatch: false, status: "NOT_READ", matchedIndices: [] };
   }
 
   let hitCount = 0;
 
-  // Checking if each target token exists in the normalized input string
-  // Note: This is an asymmetric check. We iterate over TARGET tokens.
-  targetTokens.forEach((token) => {
-    if (normalizedInput.includes(token)) {
+  originalTokens.forEach((token, index) => {
+    const normalizedToken = normalize(token);
+    // Be careful with empty tokens after normalization (e.g. only punctuation)
+    if (normalizedToken.length > 0 && normalizedInput.includes(normalizedToken)) {
       hitCount++;
+      matchedIndices[index] = true;
     }
   });
 
-  const score = hitCount / targetTokens.length;
+  const score = hitCount / originalTokens.length;
   const status = evaluate(score);
 
   return {
     score,
     matchCount: hitCount,
-    totalCount: targetTokens.length,
+    totalCount: originalTokens.length,
     isMatch: status === "READ",
     status,
+    matchedIndices,
   };
 }
 
