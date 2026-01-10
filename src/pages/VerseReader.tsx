@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
+import { calculateScore, type MatchResult } from "../utils/textMatcher";
 
 export function VerseReader() {
   const { isListening, transcript, error, startListening, stopListening } = useSpeechRecognition();
@@ -17,6 +18,10 @@ export function VerseReader() {
     citation: "창세기 1:1",
     text: "태초에 하나님이 천지를 창조하시니라",
   };
+
+  const matchResult: MatchResult = useMemo(() => {
+    return calculateScore(verse.text, transcript);
+  }, [verse.text, transcript]);
 
   return (
     <div
@@ -92,6 +97,34 @@ export function VerseReader() {
         >
           <p style={{ opacity: 0.7, fontSize: "var(--text-xs)", marginBottom: "4px" }}>인식된 텍스트:</p>
           {transcript || (isListening ? "듣고 있습니다..." : "마이크 버튼을 눌러 시작하세요")}
+        </div>
+
+        {/* Status Display */}
+        <div
+          style={{
+            marginTop: "var(--spacing-sm)",
+            textAlign: "center",
+            opacity: transcript ? 1 : 0,
+            transition: "opacity 0.3s",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "var(--text-lg)",
+              fontWeight: "bold",
+              color:
+                matchResult.status === "READ" ? "#4ade80" : matchResult.status === "PARTIAL" ? "#fbbf24" : "#ef4444",
+            }}
+          >
+            {matchResult.status === "READ"
+              ? "완료! 잘 읽으셨습니다."
+              : matchResult.status === "PARTIAL"
+              ? "조금 더 정확하게 읽어주세요."
+              : "Verse를 읽어주세요."}
+          </p>
+          <p style={{ fontSize: "var(--text-xs)", color: "var(--color-text-secondary)" }}>
+            정확도: {Math.round(matchResult.score * 100)}%
+          </p>
         </div>
 
         {error && (
