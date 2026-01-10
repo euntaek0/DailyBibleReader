@@ -13,14 +13,17 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [error, setError] = useState<string | null>(() => {
+    // @ts-expect-error - vendor prefix
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     return SpeechRecognition ? null : "Browser does not support Speech Recognition.";
   });
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const offsetIndexRef = useRef(0); // Track where we "reset" within the continuous stream
+  const lastResultLengthRef = useRef(0); // Track the latest result length to perform soft reset
 
   useEffect(() => {
+    // @ts-expect-error - vendor prefix
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -39,16 +42,22 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let currentTranscript = "";
-      const startIndex = offsetIndexRef.current;
+      const resultsLength = event.results.length;
+      lastResultLengthRef.current = resultsLength; // Update length tracker
 
-      // Ensure startIndex is within bounds. If event.results was cleared (e.g. restart), reset offset.
-      const actualStartIndex = Math.min(startIndex, event.results.length);
-      if (actualStartIndex !== startIndex) {
-        offsetIndexRef.current = 0; // Reset if invalid
+      let startIndex = offsetIndexRef.current;
+
+      // Detect engine restart (results array cleared)
+      // If current results length is smaller than our offset, it means the engine likely reset the session.
+      if (resultsLength < startIndex) {
+        offsetIndexRef.current = 0;
+        startIndex = 0;
       }
 
-      for (let i = actualStartIndex; i < event.results.length; i++) {
-        currentTranscript += event.results[i][0].transcript;
+      for (let i = startIndex; i < resultsLength; i++) {
+        if (event.results[i] && event.results[i][0]) {
+          currentTranscript += event.results[i][0].transcript;
+        }
       }
       setTranscript(currentTranscript);
     };
@@ -59,17 +68,14 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         setError("Microphone permission denied.");
         setIsListening(false);
       } else if (event.error === "no-speech") {
-        // Ignore
+        // Ignore, but maybe we should keep listening?
+        // Some browsers stop after no-speech.
       } else {
-        // Only setError if it's a real error, to avoid flickering state
-        // setError(`Error: ${event.error}`);
-        // Often 'aborted' is fired on manual stop, irrelevant.
+        // aborted is common, ignore
       }
     };
 
     recognition.onend = () => {
-      // If we are "still listening" (state), implies we should restart or it was an accidental stop.
-      // But for simplicity, we let it sync.
       setIsListening(false);
     };
 
@@ -77,7 +83,7 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        recognitionRef.current.abort();
       }
     };
   }, []);
@@ -85,13 +91,16 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       try {
-        // Reset offset on new start
+        // Reset state
         offsetIndexRef.current = 0;
+        lastResultLengthRef.current = 0;
         setTranscript("");
-        recognitionRef.current.start();
         setError(null);
+        recognitionRef.current.start();
       } catch (err) {
         console.error("Failed to start recognition:", err);
+        // If it says "already started", we just ensure isListening is true
+        setIsListening(true);
       }
     }
   }, [isListening]);
@@ -105,43 +114,9 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   // Soft reset: sets the offset to current results length so future updates ignore past results
   const resetTranscript = useCallback(() => {
     setTranscript("");
-
-    // If not listening, just clear state is enough.
-    // If listening, we need to update the offset using a hack or just Restart.
-    // Hack: We can't access `event.results.length` here directly.
-    // SO: The most robust way is to restart the engine.
-
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.abort(); // Abort clears history instantly
-      // Loop back to start? onend will fire.
-      // We rely on component to call startListening/stopListening flow or
-      // we can implement auto-restart here but that gets messy.
-      // Given ChapterReader calls resetTranscript THEN keeps listening...
-      // ...actually ChapterReader stops listening in my code when moving to next verse? NO.
-
-      // Let's modify this to just abort.
-      // ChapterReader effect will see isListening become false?
-      // Wait, ChapterReader doesn't restart it.
-
-      // Correction: ChapterReader calls `resetTranscript()` but expects to KEEP LISTENING.
-      // If I use `abort()`, it stops. I must restart it.
-      setTimeout(() => {
-        try {
-          recognitionRef.current?.start();
-        } catch (e) {
-          console.log(e);
-        }
-      }, 50);
-    }
-  }, [isListening]);
-
-  // Actually, keeping track of result length inside onresult reference is cleaner for "Soft Reset".
-  // Let's store the lastLength in a ref too.
-  const lastResultLengthRef = useRef(0);
-
-  // Re-define onresult with access to lastResultLengthRef (via refs usage in effect, it's fine)
-  // ... Wait, I can't modify onresult logic outside the effect easily without re-running effect.
-  // BUT I can use a Ref that is read inside onresult.
+    // Move the offset to the end of the current results
+    offsetIndexRef.current = lastResultLengthRef.current;
+  }, []);
 
   return {
     isListening,
