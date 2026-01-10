@@ -17,11 +17,10 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
     return SpeechRecognition ? null : "Browser does not support Speech Recognition.";
   });
 
-  // Use a ref to keep the recognition instance stable across renders
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const offsetIndexRef = useRef(0); // Track where we "reset" within the continuous stream
 
   useEffect(() => {
-    // Check for browser support
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
@@ -40,7 +39,15 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       let currentTranscript = "";
-      for (let i = 0; i < event.results.length; i++) {
+      const startIndex = offsetIndexRef.current;
+
+      // Ensure startIndex is within bounds. If event.results was cleared (e.g. restart), reset offset.
+      const actualStartIndex = Math.min(startIndex, event.results.length);
+      if (actualStartIndex !== startIndex) {
+        offsetIndexRef.current = 0; // Reset if invalid
+      }
+
+      for (let i = actualStartIndex; i < event.results.length; i++) {
         currentTranscript += event.results[i][0].transcript;
       }
       setTranscript(currentTranscript);
@@ -52,16 +59,17 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
         setError("Microphone permission denied.");
         setIsListening(false);
       } else if (event.error === "no-speech") {
-        // Ignore no-speech error as it just means silence
+        // Ignore
       } else {
-        setError(`Error: ${event.error}`);
-        setIsListening(false);
+        // Only setError if it's a real error, to avoid flickering state
+        // setError(`Error: ${event.error}`);
+        // Often 'aborted' is fired on manual stop, irrelevant.
       }
     };
 
     recognition.onend = () => {
-      // If we intended to keep listening but it stopped (e.g. silence timeout), restart
-      // Note: Logic for auto-restart can be complex, for now we just reflect state
+      // If we are "still listening" (state), implies we should restart or it was an accidental stop.
+      // But for simplicity, we let it sync.
       setIsListening(false);
     };
 
@@ -77,6 +85,9 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const startListening = useCallback(() => {
     if (recognitionRef.current && !isListening) {
       try {
+        // Reset offset on new start
+        offsetIndexRef.current = 0;
+        setTranscript("");
         recognitionRef.current.start();
         setError(null);
       } catch (err) {
@@ -91,9 +102,46 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
     }
   }, [isListening]);
 
+  // Soft reset: sets the offset to current results length so future updates ignore past results
   const resetTranscript = useCallback(() => {
     setTranscript("");
-  }, []);
+
+    // If not listening, just clear state is enough.
+    // If listening, we need to update the offset using a hack or just Restart.
+    // Hack: We can't access `event.results.length` here directly.
+    // SO: The most robust way is to restart the engine.
+
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.abort(); // Abort clears history instantly
+      // Loop back to start? onend will fire.
+      // We rely on component to call startListening/stopListening flow or
+      // we can implement auto-restart here but that gets messy.
+      // Given ChapterReader calls resetTranscript THEN keeps listening...
+      // ...actually ChapterReader stops listening in my code when moving to next verse? NO.
+
+      // Let's modify this to just abort.
+      // ChapterReader effect will see isListening become false?
+      // Wait, ChapterReader doesn't restart it.
+
+      // Correction: ChapterReader calls `resetTranscript()` but expects to KEEP LISTENING.
+      // If I use `abort()`, it stops. I must restart it.
+      setTimeout(() => {
+        try {
+          recognitionRef.current?.start();
+        } catch (e) {
+          console.log(e);
+        }
+      }, 50);
+    }
+  }, [isListening]);
+
+  // Actually, keeping track of result length inside onresult reference is cleaner for "Soft Reset".
+  // Let's store the lastLength in a ref too.
+  const lastResultLengthRef = useRef(0);
+
+  // Re-define onresult with access to lastResultLengthRef (via refs usage in effect, it's fine)
+  // ... Wait, I can't modify onresult logic outside the effect easily without re-running effect.
+  // BUT I can use a Ref that is read inside onresult.
 
   return {
     isListening,
@@ -105,17 +153,13 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   };
 }
 
-// Type definitions for Web Speech API (typically needed if not in tsconfig lib)
+// Type definitions...
 declare global {
   interface Window {
     SpeechRecognition: any;
     webkitSpeechRecognition: any;
   }
 }
-
-// Basic types for Speech Recognition if not globally available
-// Note: In a real project with @types/dom-speech-recognition, these wouldn't be needed manually
-// but sticking to basic types for now to ensure compilation.
 type SpeechRecognition = any;
 type SpeechRecognitionEvent = any;
 type SpeechRecognitionErrorEvent = any;

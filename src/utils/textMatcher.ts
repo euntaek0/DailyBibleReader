@@ -57,7 +57,9 @@ export function calculateScore(targetVerse: string, inputTranscript: string): Ma
   // IMPORTANT: We must split the ORIGINAL verse by space to preserve order for indices.
   // Then we normalize each token for comparison.
   const originalTokens = targetVerse.split(/\s+/);
-  const normalizedInput = normalize(inputTranscript); // Normalize input too for fair comparison
+  const normalizedInput = normalize(inputTranscript);
+  const inputTokens = normalizedInput.split(" ").filter((t) => t.length > 0);
+
   const matchedIndices: boolean[] = new Array(originalTokens.length).fill(false);
 
   if (originalTokens.length === 0) {
@@ -65,13 +67,39 @@ export function calculateScore(targetVerse: string, inputTranscript: string): Ma
   }
 
   let hitCount = 0;
+  let inputCursor = 0; // Track position in input tokens
 
   originalTokens.forEach((token, index) => {
     const normalizedToken = normalize(token);
-    // Be careful with empty tokens after normalization (e.g. only punctuation)
-    if (normalizedToken.length > 0 && normalizedInput.includes(normalizedToken)) {
+
+    if (normalizedToken.length === 0) {
+      // If token is just punctuation/spaces, ignore it for scoring but don't break sequence
+      return;
+    }
+
+    // Search for this token in the input stream starting from current cursor
+    // We look ahead to find the *first* occurrence of this token
+    let foundIndex = -1;
+
+    // Look ahead window?
+    // Ideally, for "A B A", if we matched first A, cursor is after A. Next if we look for B, we find B.
+    // Then look for A, we find second A.
+    // If we missed B in speech ("A ... A"), we should probably match the second A to the second A in text?
+    // Actually, simple greedy forward search usually works decent enough for reading tracking.
+    // Find the first occurrence of normalizedToken in inputTokens[inputCursor...]
+
+    for (let i = inputCursor; i < inputTokens.length; i++) {
+      if (inputTokens[i] === normalizedToken) {
+        foundIndex = i;
+        break;
+      }
+    }
+
+    if (foundIndex !== -1) {
       hitCount++;
       matchedIndices[index] = true;
+      // Advance cursor to AFTER the found token so it can't be reused
+      inputCursor = foundIndex + 1;
     }
   });
 
