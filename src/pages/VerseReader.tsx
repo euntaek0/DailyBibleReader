@@ -1,9 +1,22 @@
-import { useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import { calculateScore, type MatchResult } from "../utils/textMatcher";
+import { fetchDailyVerse, type DailyVerse } from "../utils/api";
 
 export function VerseReader() {
   const { isListening, transcript, error, startListening, stopListening } = useSpeechRecognition();
+  const [verse, setVerse] = useState<DailyVerse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadVerse = async () => {
+      setIsLoading(true);
+      const data = await fetchDailyVerse();
+      setVerse(data);
+      setIsLoading(false);
+    };
+    loadVerse();
+  }, []);
 
   const toggleRecording = () => {
     if (isListening) {
@@ -13,15 +26,26 @@ export function VerseReader() {
     }
   };
 
-  // Mock verse for initial layout
-  const verse = {
-    citation: "창세기 1:1",
-    text: "태초에 하나님이 천지를 창조하시니라",
-  };
-
   const matchResult: MatchResult = useMemo(() => {
+    if (!verse) return { score: 0, matchCount: 0, totalCount: 0, isMatch: false, status: "NOT_READ" };
     return calculateScore(verse.text, transcript);
-  }, [verse.text, transcript]);
+  }, [verse, transcript]);
+
+  if (isLoading || !verse) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
+          color: "var(--color-text-secondary)",
+        }}
+      >
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div
@@ -68,7 +92,7 @@ export function VerseReader() {
             color: "var(--color-primary)",
           }}
         >
-          {verse.citation}
+          {verse.reference}
         </h2>
         <p
           style={{
