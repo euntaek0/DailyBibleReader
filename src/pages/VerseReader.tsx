@@ -1,7 +1,16 @@
 import { useState } from "react";
+import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 
 export function VerseReader() {
-  const [isRecording, setIsRecording] = useState(false);
+  const { isListening, transcript, error, startListening, stopListening } = useSpeechRecognition();
+
+  const toggleRecording = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
 
   // Mock verse for initial layout
   const verse = {
@@ -67,6 +76,27 @@ export function VerseReader() {
         >
           {verse.text}
         </p>
+
+        {/* Live Transcript Display (for debugging/feedback) */}
+        <div
+          style={{
+            marginTop: "var(--spacing-md)",
+            padding: "var(--spacing-sm)",
+            width: "100%",
+            minHeight: "60px",
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "var(--radius-md)",
+            fontSize: "var(--text-base)",
+            color: "var(--color-text-primary)",
+          }}
+        >
+          <p style={{ opacity: 0.7, fontSize: "var(--text-xs)", marginBottom: "4px" }}>인식된 텍스트:</p>
+          {transcript || (isListening ? "듣고 있습니다..." : "마이크 버튼을 눌러 시작하세요")}
+        </div>
+
+        {error && (
+          <p style={{ color: "#ef4444", fontSize: "var(--text-sm)", marginTop: "var(--spacing-sm)" }}>{error}</p>
+        )}
       </section>
 
       {/* Controls Area */}
@@ -78,20 +108,20 @@ export function VerseReader() {
         }}
       >
         <button
-          onClick={() => setIsRecording(!isRecording)}
+          onClick={toggleRecording}
           style={{
             width: "80px",
             height: "80px",
             borderRadius: "50%",
-            backgroundColor: isRecording ? "#ef4444" : "var(--color-primary)",
-            boxShadow: `0 0 20px ${isRecording ? "rgba(239, 68, 68, 0.4)" : "var(--color-primary-glow)"}`,
+            backgroundColor: isListening ? "#ef4444" : "var(--color-primary)",
+            boxShadow: `0 0 20px ${isListening ? "rgba(239, 68, 68, 0.4)" : "var(--color-primary-glow)"}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             transition: "all 0.3s ease",
-            transform: isRecording ? "scale(1.1)" : "scale(1)",
+            transform: isListening ? "scale(1.1)" : "scale(1)",
           }}
-          aria-label={isRecording ? "녹음 중지" : "녹음 시작"}
+          aria-label={isListening ? "녹음 중지" : "녹음 시작"}
         >
           {/* Microphone Icon / Stop Icon */}
           <div
@@ -99,7 +129,7 @@ export function VerseReader() {
               width: "24px",
               height: "24px",
               backgroundColor: "white",
-              borderRadius: isRecording ? "4px" : "50%", // Square when recording, Circleish when not (simplistic icon)
+              borderRadius: isListening ? "4px" : "50%", // Square when recording, Circleish when not (simplistic icon)
               transition: "border-radius 0.3s",
             }}
           />
