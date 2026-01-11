@@ -1,5 +1,3 @@
-import React from "react";
-
 interface BottomNavigationProps {
   currentView: "daily" | "chapter" | "yearPlan";
   onNavigate: (view: "daily" | "chapter" | "yearPlan") => void;

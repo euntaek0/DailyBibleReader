@@ -4,7 +4,7 @@ import { calculateScore, type MatchResult } from "../utils/textMatcher";
 import { fetchDailyVerse, type DailyVerse } from "../utils/api";
 
 export function VerseReader() {
-  const { isListening, transcript, error, startListening, stopListening } = useSpeechRecognition();
+  const { isListening, transcript, startListening, stopListening } = useSpeechRecognition();
   const [verse, setVerse] = useState<DailyVerse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
