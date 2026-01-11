@@ -13,7 +13,6 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [error, setError] = useState<string | null>(() => {
-    // @ts-expect-error - vendor prefix
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     return SpeechRecognition ? null : "Browser does not support Speech Recognition.";
   });
@@ -23,7 +22,6 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
   const lastResultLengthRef = useRef(0); // Track the latest result length to perform soft reset
 
   useEffect(() => {
-    // @ts-expect-error - vendor prefix
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {

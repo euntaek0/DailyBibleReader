@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Daily Bible Reader",
+  "version": "1.0.0",
+  "description": "Daily Bible reading helper with speech recognition.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://raw.githubusercontent.com/*"],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Daily Bible Reader"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "vite.svg",
+    "48": "vite.svg",
+    "128": "vite.svg"
+  }
+}

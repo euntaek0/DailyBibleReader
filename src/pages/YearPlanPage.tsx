@@ -163,7 +163,6 @@ export function YearPlanPage() {
                 }}
               >
                 <span style={{ fontWeight: 600 }}>
-                  {/* @ts-expect-error - index access */}
                   {bibleBookMap[ch.book as keyof typeof bibleBookMap]?.kor} {ch.chapter}장
                 </span>
                 <button
