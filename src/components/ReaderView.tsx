@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { bibleBookMap } from "../constants/bible";
-import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
-import { calculateScore, type MatchResult } from "../utils/textMatcher";
+import { bibleBookMap } from "@/constants/bible";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { calculateScore, type MatchResult } from "@/utils/textMatcher";
 
 export interface ChapterVerse {
   index: number;

@@ -1,4 +1,4 @@
-import { getRandomVerse } from "../constants/bible";
+import { getRandomVerse } from "@/constants/bible";
 
 export interface DailyVerse {
   text: string;
@@ -28,7 +28,7 @@ export const fetchDailyVerse = async (): Promise<DailyVerse> => {
   }
 };
 
-import { bibleStructure } from "../constants/bible";
+import { bibleStructure } from "@/constants/bible";
 
 interface BibleBook {
   abbrev: string;

@@ -1,4 +1,4 @@
-import { bibleStructure } from "./bible";
+import { bibleStructure } from "@/constants/bible";
 
 export interface PlanDay {
   day: number;
