@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
-import { calculateScore, type MatchResult } from "../utils/textMatcher";
-import { fetchDailyVerse, type DailyVerse } from "../utils/api";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { calculateScore, type MatchResult } from "@/utils/textMatcher";
+import { fetchDailyVerse, type DailyVerse } from "@/utils/api";
 
 export function VerseReader() {
   const { isListening, transcript, startListening, stopListening } = useSpeechRecognition();
