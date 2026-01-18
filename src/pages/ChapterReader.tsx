@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { fetchChapter } from "@/utils/api.ts";
-import { bibleBookMap, bibleStructure } from "@/constants/bible.ts";
-import { ReaderView, type ChapterVerse } from "@/components/ReaderView.tsx";
+import { fetchChapter } from "../utils/api.ts";
+import { bibleBookMap, bibleStructure } from "../constants/bible.ts";
+import { ReaderView, type ChapterVerse } from "../components/ReaderView.tsx";
 
 export function ChapterReader() {
   console.log("ChapterReader");
