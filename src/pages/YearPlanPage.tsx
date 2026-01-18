@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { getPlanForDate, type PlanDay } from "@/constants/yearPlan";
-import { bibleBookMap } from "@/constants/bible";
-import { fetchChapter } from "@/utils/api";
-import { ReaderView, type ChapterVerse } from "@/components/ReaderView";
+import { getPlanForDate, type PlanDay } from "@/constants/yearPlan.ts";
+import { bibleBookMap } from "@/constants/bible.ts";
+import { fetchChapter } from "@/utils/api.ts";
+import { ReaderView, type ChapterVerse } from "@/components/ReaderView.tsx";
 
 export function YearPlanPage() {
   console.log("YearPlanPage");
