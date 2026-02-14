@@ -93,7 +93,7 @@ export function ChapterReader(): React.JSX.Element {
         <div className="reader-column space-y-6">
           <Card className="border-border/80 bg-card shadow-1">
             <CardHeader className="space-y-3 pb-2">
-              <CardTitle className="flex items-center gap-2 text-[1.75rem] leading-[1.12] tracking-[-0.02em]">
+              <CardTitle className="flex items-center gap-2 text-[1.4rem] leading-[1.15] tracking-[-0.018em]">
                 <BookOpenText className="h-5 w-5 text-primary" />
                 읽을 본문 선택
               </CardTitle>
@@ -113,9 +113,9 @@ export function ChapterReader(): React.JSX.Element {
           </Card>
 
           <Card className="border-border/80 bg-muted/35">
-            <CardContent className="space-y-2 p-6">
-              <p className="text-base font-semibold text-foreground">읽기 흐름</p>
-              <p className="text-base leading-7 text-muted-foreground">
+            <CardContent className="space-y-2 p-5">
+              <p className="text-sm font-semibold text-foreground">읽기 흐름</p>
+              <p className="text-sm leading-6 text-muted-foreground">
                 낭독 중에는 불필요한 탐색 요소를 최소화하고, 읽은 어절만 실시간으로 강조합니다.
               </p>
             </CardContent>
@@ -147,7 +147,7 @@ export function ChapterReader(): React.JSX.Element {
                   setSelectedBookKey(event.target.value);
                   setSelectedChapter(1);
                 }}
-                className="h-12 w-full rounded-xl border border-input bg-background px-4 text-base outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {Object.keys(bibleBookMap).map((key) => {
                   const book = bibleBookMap[key as keyof typeof bibleBookMap];
@@ -168,7 +168,7 @@ export function ChapterReader(): React.JSX.Element {
                     key={number}
                     type="button"
                     onClick={() => setSelectedChapter(number)}
-                    className={`h-12 rounded-lg border text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    className={`h-10 rounded-lg border text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
                       number === selectedChapter
                         ? "border-primary/40 bg-primary/10 text-primary"
                         : "border-border bg-background text-foreground hover:bg-muted"

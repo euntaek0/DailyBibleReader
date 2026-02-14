@@ -186,7 +186,7 @@ export function ReaderView({
       <div className="flex h-full flex-col">
         <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="본문을 불러오는 중" variant="section" />
         <PageContainer withBottomInset>
-          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/75 bg-card text-base text-muted-foreground">
+          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/75 bg-card text-sm text-muted-foreground">
             본문을 불러오고 있어요…
           </div>
         </PageContainer>
@@ -197,15 +197,15 @@ export function ReaderView({
   if (error) {
     return (
       <div className="flex h-full flex-col">
-      <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="불러오기 실패" variant="section" />
-      <PageContainer withBottomInset>
-        <div className="reader-column">
-          <Card className="border-destructive/30 bg-destructive/5">
-            <CardContent className="space-y-4 p-6">
-              <p className="text-base text-foreground">{error}</p>
-              <Button variant="outline" onClick={onBack}>
-                선택 화면으로 돌아가기
-              </Button>
+        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="불러오기 실패" variant="section" />
+        <PageContainer withBottomInset>
+          <div className="reader-column">
+            <Card className="border-destructive/30 bg-destructive/5">
+              <CardContent className="space-y-4 p-5">
+                <p className="text-sm text-foreground">{error}</p>
+                <Button variant="outline" onClick={onBack}>
+                  선택 화면으로 돌아가기
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -235,9 +235,9 @@ export function ReaderView({
       <PageContainer className={cn(isListening ? "pt-3" : "pt-6")}>
         <div ref={scrollRef} className="reader-column space-y-6">
           <Card className={cn("border-border/80 bg-card/96", isListening ? "shadow-2" : "shadow-1")}>
-            <CardContent className={cn("space-y-4", isListening ? "p-5" : "p-6")}>
+            <CardContent className={cn("space-y-4", isListening ? "p-4" : "p-5")}>
               <div className="flex items-center justify-between gap-3">
-                <p className="text-base font-semibold text-foreground">장 진행률</p>
+                <p className="text-sm font-semibold text-foreground">장 진행률</p>
                 {currentMatchResult ? <StatusBadge status={currentMatchResult.status} score={currentMatchResult.score} /> : null}
               </div>
               <Progress value={progressValue} />
@@ -259,7 +259,7 @@ export function ReaderView({
                   key={verse.index}
                   id={`verse-${index}`}
                   className={cn(
-                    "rounded-xl border p-6 transition-all duration-base ease-standard",
+                    "rounded-xl border p-5 transition-all duration-base ease-standard",
                     isActive && "reader-surface shadow-2",
                     isCompleted && "border-status-read/30 bg-status-read/5",
                     !isActive && !isCompleted && "border-border/80 bg-card",
@@ -267,12 +267,12 @@ export function ReaderView({
                   )}
                 >
                   <div className="flex items-start gap-3">
-                    <span className={cn("pt-1 text-base font-semibold", isActive ? "text-primary" : "text-muted-foreground")}>{verse.index + 1}</span>
+                    <span className={cn("pt-1 text-sm font-semibold", isActive ? "text-primary" : "text-muted-foreground")}>{verse.index + 1}</span>
                     <ReaderText
                       text={verse.text}
                       matchedIndices={isActive ? currentMatchResult?.matchedIndices : undefined}
                       dimUnmatched={isActive}
-                      className={cn("text-[clamp(1.85rem,6.2vw,2.35rem)]", isCompleted && "text-status-read")}
+                      className={cn("text-[clamp(1.4rem,5.6vw,1.9rem)]", isCompleted && "text-status-read")}
                     />
                   </div>
                 </article>
@@ -280,7 +280,7 @@ export function ReaderView({
             })}
           </section>
 
-          <div className="sticky bottom-3 z-10 rounded-xl border border-border/80 bg-background/92 p-5 shadow-2 backdrop-blur">
+          <div className="sticky bottom-3 z-10 rounded-xl border border-border/80 bg-background/92 p-4 shadow-2 backdrop-blur">
             <MicControl
               state={micState}
               onToggle={handleToggleMic}

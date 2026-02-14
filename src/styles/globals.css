@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --font-sans: "Pretendard Variable", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR";
+    --font-sans: "Pretendard", "Pretendard Variable", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR";
 
     --background: 220 23% 96%;
     --foreground: 222 30% 16%;
@@ -104,6 +104,18 @@
     --reader-bg: 0 0% 100%;
     --highlight-focus: 50 100% 70%;
     --highlight-read: 120 60% 85%;
+  }
+
+  html[data-font-scale="small"] {
+    font-size: 15px;
+  }
+
+  html[data-font-scale="normal"] {
+    font-size: 16px;
+  }
+
+  html[data-font-scale="large"] {
+    font-size: 17px;
   }
 
   * {

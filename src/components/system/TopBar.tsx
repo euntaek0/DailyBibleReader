@@ -23,11 +23,11 @@ export function TopBar({
 }: TopBarProps): React.JSX.Element {
   const isPage = variant === "page";
   const titleClass = compact
-    ? "text-[1.625rem] leading-[1.14] tracking-[-0.022em]"
+    ? "text-[1.375rem] leading-[1.16] tracking-[-0.018em]"
     : isPage
-      ? "text-[clamp(2rem,7vw,2.375rem)] leading-[1.08] tracking-[-0.03em]"
-      : "text-[1.75rem] leading-[1.14] tracking-[-0.022em]";
-  const subtitleClass = compact ? "text-[0.95rem] leading-[1.45]" : isPage ? "text-base leading-[1.45]" : "text-[0.95rem] leading-[1.45]";
+      ? "text-[clamp(1.5rem,6.2vw,1.95rem)] leading-[1.1] tracking-[-0.02em]"
+      : "text-[1.4rem] leading-[1.14] tracking-[-0.018em]";
+  const subtitleClass = compact ? "text-sm leading-[1.45]" : isPage ? "text-sm leading-[1.45]" : "text-sm leading-[1.45]";
 
   return (
     <header
@@ -36,14 +36,14 @@ export function TopBar({
         compact
           ? "pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]"
           : isPage
-            ? "pb-4 pt-[calc(env(safe-area-inset-top)+1.5rem)]"
+            ? "pb-3 pt-[calc(env(safe-area-inset-top)+1.1rem)]"
             : "pb-3 pt-[calc(env(safe-area-inset-top)+1rem)]"
       )}
     >
       <div className="flex min-h-[var(--topbar-height)] items-center gap-3">
         {onBack ? (
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label="뒤로 가기" className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:text-foreground">
-            <ChevronLeft className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={onBack} aria-label="뒤로 가기" className="tap-target h-10 w-10 rounded-full text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="h-4 w-4" />
           </Button>
         ) : null}
         <div className="min-w-0 flex-1">

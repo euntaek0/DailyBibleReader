@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { BottomNavigation } from "../../components/BottomNavigation.tsx";
 
 function BottomNavigationDemo(): React.JSX.Element {
-  const [current, setCurrent] = useState<"daily" | "chapter" | "yearPlan">("daily");
+  const [current, setCurrent] = useState<"daily" | "chapter" | "yearPlan" | "settings" | "login">("daily");
 
   return (
     <div className="relative h-[260px] border bg-background">

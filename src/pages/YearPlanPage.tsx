@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
-import { getPlanForDate, type PlanDay } from "../constants/yearPlan.ts";
+import type { PlanDay } from "../constants/yearPlan.ts";
 import { bibleBookMap } from "../constants/bible.ts";
-import { fetchChapter } from "../utils/api.ts";
+import { fetchChapter, fetchYearPlanDay } from "../utils/api.ts";
 import { ReaderView, type ChapterVerse } from "../components/ReaderView.tsx";
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
@@ -15,12 +15,21 @@ import { Progress } from "../components/ui/progress.tsx";
 import { cn } from "../lib/utils.ts";
 
 function formatDateInput(date: Date): string {
-  return date.toISOString().split("T")[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateInput(value: string): Date {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
 }
 
 export function YearPlanPage(): React.JSX.Element {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [todayPlan, setTodayPlan] = useState<PlanDay | null>(null);
+  const [isPlanLoading, setIsPlanLoading] = useState(false);
 
   const [isReadingMode, setIsReadingMode] = useState(false);
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
@@ -29,7 +38,38 @@ export function YearPlanPage(): React.JSX.Element {
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    setTodayPlan(getPlanForDate(selectedDate));
+    let isActive = true;
+
+    const loadPlan = async (): Promise<void> => {
+      setIsPlanLoading(true);
+      try {
+        const plan = await fetchYearPlanDay(selectedDate);
+        if (!isActive) {
+          return;
+        }
+
+        setTodayPlan(plan);
+        setCurrentChapterIndex(0);
+      } catch (error) {
+        console.error(error);
+        if (!isActive) {
+          return;
+        }
+
+        setTodayPlan(null);
+        toast.error("통독 계획을 불러오지 못했어요.");
+      } finally {
+        if (isActive) {
+          setIsPlanLoading(false);
+        }
+      }
+    };
+
+    void loadPlan();
+
+    return () => {
+      isActive = false;
+    };
   }, [selectedDate]);
 
   useEffect(() => {
@@ -117,7 +157,7 @@ export function YearPlanPage(): React.JSX.Element {
         <div className="reader-column space-y-6">
           <Card className="border-border/80 bg-card shadow-1">
             <CardHeader className="space-y-3 pb-2">
-              <CardTitle className="text-[clamp(2.25rem,9vw,3rem)] leading-[1.02] tracking-[-0.03em]">Day {todayPlan?.day ?? "-"}</CardTitle>
+              <CardTitle className="text-[clamp(1.8rem,8vw,2.3rem)] leading-[1.05] tracking-[-0.02em]">Day {todayPlan?.day ?? "-"}</CardTitle>
               <CardDescription>날짜를 선택하면 해당 분량으로 이동합니다.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-2">
@@ -141,10 +181,10 @@ export function YearPlanPage(): React.JSX.Element {
                   value={formatDateInput(selectedDate)}
                   onChange={(event) => {
                     if (event.target.value) {
-                      setSelectedDate(new Date(event.target.value));
+                      setSelectedDate(parseDateInput(event.target.value));
                     }
                   }}
-                  className="h-12 flex-1 rounded-xl border border-input bg-background px-4 text-[1.125rem] font-medium tracking-[-0.01em] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="h-10 flex-1 rounded-lg border border-input bg-background px-3 text-sm font-medium tracking-[-0.01em] outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="날짜 선택"
                 />
 
@@ -168,7 +208,13 @@ export function YearPlanPage(): React.JSX.Element {
           </Card>
 
           <section className="space-y-4" aria-label="오늘 읽을 장 목록">
-            {todayPlan?.chapters.map((chapterInfo, index) => {
+            {isPlanLoading ? (
+              <Card className="border-border/80 bg-card">
+                <CardContent className="p-5 text-sm text-muted-foreground">통독 계획을 불러오는 중이에요…</CardContent>
+              </Card>
+            ) : null}
+
+            {!isPlanLoading && todayPlan?.chapters.map((chapterInfo, index) => {
               const book = bibleBookMap[chapterInfo.book as keyof typeof bibleBookMap];
               const isCompleted = index < currentChapterIndex;
               const isCurrent = index === currentChapterIndex;
@@ -178,9 +224,9 @@ export function YearPlanPage(): React.JSX.Element {
                   key={`${chapterInfo.book}-${chapterInfo.chapter}`}
                   className={cn("bg-card transition-colors", isCurrent ? "border-primary/45 shadow-1" : "border-border/80")}
                 >
-                  <CardContent className="flex items-center justify-between gap-4 p-6">
+                  <CardContent className="flex items-center justify-between gap-4 p-5">
                     <div className="space-y-2">
-                      <p className="text-[1.875rem] font-semibold leading-[1.08] tracking-[-0.025em] text-foreground">
+                      <p className="text-[1.4rem] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">
                         {book?.kor} {chapterInfo.chapter}장
                       </p>
                       {isCurrent ? <Badge variant="default">현재 읽을 순서</Badge> : null}
@@ -201,6 +247,12 @@ export function YearPlanPage(): React.JSX.Element {
                 </Card>
               );
             })}
+
+            {!isPlanLoading && todayPlan && todayPlan.chapters.length === 0 ? (
+              <Card className="border-border/80 bg-card">
+                <CardContent className="p-5 text-sm text-muted-foreground">해당 날짜의 통독 분량이 없습니다.</CardContent>
+              </Card>
+            ) : null}
           </section>
         </div>
       </PageContainer>
