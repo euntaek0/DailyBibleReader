@@ -4,9 +4,9 @@
 
 @layer base {
   :root {
-    --font-sans: "Pretendard", "Pretendard Variable", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR";
+    --font-sans: "Pretendard Variable", "Pretendard", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR";
 
-    --background: 220 23% 96%;
+    --background: 0 0% 98%;
     --foreground: 222 30% 16%;
     --card: 0 0% 100%;
     --card-foreground: 222 30% 16%;
@@ -14,19 +14,19 @@
     --popover-foreground: 222 30% 16%;
     --primary: 177 69% 31%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 19% 90%;
-    --secondary-foreground: 222 22% 30%;
-    --muted: 220 19% 92%;
-    --muted-foreground: 220 13% 42%;
+    --secondary: 0 0% 93%;
+    --secondary-foreground: 222 18% 26%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
     --accent: 177 56% 40%;
     --accent-foreground: 0 0% 100%;
     --destructive: 8 73% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 17% 82%;
-    --input: 220 17% 82%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
     --ring: 177 69% 31%;
 
-    --reader-bg: 42 37% 95%;
+    --reader-bg: 45 25% 97%;
     --highlight-read: 148 35% 86%;
     --highlight-focus: 199 65% 88%;
     --highlight-miss: 35 82% 87%;

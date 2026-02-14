@@ -122,7 +122,12 @@ export function VerseReader(): React.JSX.Element {
                 text={verse.text}
                 matchedIndices={matchResult.matchedIndices}
                 dimUnmatched={isListening}
-                className={cn(isListening ? "text-[clamp(1.4rem,7vw,1.95rem)]" : "text-[clamp(1.5rem,7.2vw,2.1rem)]")}
+                className={cn(
+                  "leading-[1.75]",
+                  isListening
+                    ? "text-[clamp(1.0625rem,4.4vw,1.4rem)]"
+                    : "text-[clamp(1.125rem,4.8vw,1.5rem)]"
+                )}
               />
 
               <div className="flex items-center justify-between gap-4">
