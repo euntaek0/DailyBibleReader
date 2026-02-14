@@ -22,34 +22,35 @@ export function TopBar({
   variant = "page",
 }: TopBarProps): React.JSX.Element {
   const isPage = variant === "page";
+  const titleClass = compact
+    ? "text-[1.625rem] leading-[1.14] tracking-[-0.022em]"
+    : isPage
+      ? "text-[clamp(2rem,7vw,2.375rem)] leading-[1.08] tracking-[-0.03em]"
+      : "text-[1.75rem] leading-[1.14] tracking-[-0.022em]";
+  const subtitleClass = compact ? "text-[0.95rem] leading-[1.45]" : isPage ? "text-base leading-[1.45]" : "text-[0.95rem] leading-[1.45]";
 
   return (
     <header
       className={cn(
-        "topbar-shadow sticky top-0 z-20 bg-background/96 px-[var(--content-gutter)] backdrop-blur supports-[backdrop-filter]:bg-background/92",
+        "topbar-shadow sticky top-0 z-20 bg-background/94 px-[var(--content-gutter)] backdrop-blur supports-[backdrop-filter]:bg-background/90",
         compact
-          ? "pb-2 pt-[calc(env(safe-area-inset-top)+0.35rem)]"
+          ? "pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]"
           : isPage
-            ? "pb-3 pt-[calc(env(safe-area-inset-top)+0.95rem)]"
-            : "pb-3 pt-[calc(env(safe-area-inset-top)+0.65rem)]"
+            ? "pb-4 pt-[calc(env(safe-area-inset-top)+1.5rem)]"
+            : "pb-3 pt-[calc(env(safe-area-inset-top)+1rem)]"
       )}
     >
-      <div className="flex min-h-[var(--topbar-height)] items-center gap-2">
+      <div className="flex min-h-[var(--topbar-height)] items-center gap-3">
         {onBack ? (
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label="뒤로 가기" className="tap-target">
+          <Button variant="ghost" size="icon" onClick={onBack} aria-label="뒤로 가기" className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:text-foreground">
             <ChevronLeft className="h-5 w-5" />
           </Button>
         ) : null}
         <div className="min-w-0 flex-1">
-          <h1
-            className={cn(
-              "truncate font-semibold tracking-[-0.015em] text-foreground",
-              compact ? "text-lg leading-tight" : isPage ? "text-[2rem] leading-[1.12]" : "text-[1.35rem] leading-[1.2]"
-            )}
-          >
+          <h1 className={cn("truncate font-semibold text-foreground", titleClass)}>
             {title}
           </h1>
-          {subtitle ? <p className={cn("truncate pt-1 text-muted-foreground", compact ? "text-sm" : "text-[1.05rem]")}>{subtitle}</p> : null}
+          {subtitle ? <p className={cn("truncate pt-1 text-muted-foreground", subtitleClass)}>{subtitle}</p> : null}
         </div>
         {rightAction ? <div className="shrink-0">{rightAction}</div> : null}
       </div>

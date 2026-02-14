@@ -7,7 +7,7 @@ const config: Config = {
   theme: {
     container: {
       center: true,
-      padding: "1rem",
+      padding: "1.5rem",
       screens: {
         "2xl": "1280px",
       },
@@ -85,7 +85,7 @@ const config: Config = {
         ],
       },
       fontSize: {
-        reader: ["clamp(22px, 5.2vw, 30px)", { lineHeight: "var(--line-height-reader)", letterSpacing: "-0.005em" }],
+        reader: ["clamp(26px, 5.8vw, 34px)", { lineHeight: "var(--line-height-reader)", letterSpacing: "-0.012em" }],
       },
       lineHeight: {
         reader: "var(--line-height-reader)",

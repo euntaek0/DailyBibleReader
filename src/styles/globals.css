@@ -4,45 +4,45 @@
 
 @layer base {
   :root {
-    --font-sans: "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR";
+    --font-sans: "Pretendard Variable", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR";
 
-    --background: 210 33% 98%;
-    --foreground: 222 29% 15%;
+    --background: 220 23% 96%;
+    --foreground: 222 30% 16%;
     --card: 0 0% 100%;
-    --card-foreground: 222 29% 15%;
+    --card-foreground: 222 30% 16%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 29% 15%;
-    --primary: 217 83% 56%;
+    --popover-foreground: 222 30% 16%;
+    --primary: 177 69% 31%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 170 46% 42%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 213 38% 94%;
-    --muted-foreground: 217 20% 42%;
-    --accent: 41 89% 60%;
-    --accent-foreground: 222 29% 15%;
-    --destructive: 16 73% 58%;
+    --secondary: 220 19% 90%;
+    --secondary-foreground: 222 22% 30%;
+    --muted: 220 19% 92%;
+    --muted-foreground: 220 13% 42%;
+    --accent: 177 56% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 8 73% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 215 29% 86%;
-    --input: 215 29% 86%;
-    --ring: 217 83% 56%;
+    --border: 220 17% 82%;
+    --input: 220 17% 82%;
+    --ring: 177 69% 31%;
 
-    --reader-bg: 44 57% 96%;
-    --highlight-read: 146 45% 89%;
-    --highlight-focus: 214 86% 87%;
-    --highlight-miss: 35 95% 88%;
+    --reader-bg: 42 37% 95%;
+    --highlight-read: 148 35% 86%;
+    --highlight-focus: 199 65% 88%;
+    --highlight-miss: 35 82% 87%;
 
-    --status-read: 151 45% 38%;
-    --status-partial: 38 72% 45%;
-    --status-not-read: 216 17% 45%;
+    --status-read: 160 47% 35%;
+    --status-partial: 33 57% 41%;
+    --status-not-read: 220 13% 45%;
 
-    --radius-sm: 0.375rem;
-    --radius-md: 0.625rem;
-    --radius-lg: 0.875rem;
-    --radius-xl: 1.125rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
 
-    --shadow-1: 0 1px 2px rgb(15 23 42 / 0.08);
-    --shadow-2: 0 8px 20px rgb(15 23 42 / 0.12);
-    --shadow-3: 0 14px 36px rgb(15 23 42 / 0.18);
+    --shadow-1: 0 1px 2px rgb(15 23 42 / 0.06);
+    --shadow-2: 0 8px 24px rgb(15 23 42 / 0.09);
+    --shadow-3: 0 20px 40px rgb(15 23 42 / 0.14);
 
     --duration-fast: 120ms;
     --duration-base: 180ms;
@@ -52,43 +52,43 @@
     --easing-emphasis: cubic-bezier(0.2, 0.8, 0.2, 1);
     --easing-exit: cubic-bezier(0.4, 0, 1, 1);
 
-    --line-height-reader: 1.82;
+    --line-height-reader: 1.86;
     --line-height-ui: 1.5;
 
-    --topbar-height: 3.5rem;
-    --bottom-nav-height: 4.75rem;
-    --content-gutter: 1rem;
+    --topbar-height: 4rem;
+    --bottom-nav-height: 5rem;
+    --content-gutter: clamp(1rem, 4vw, 1.5rem);
   }
 
   .dark {
-    --background: 224 39% 10%;
-    --foreground: 214 31% 92%;
-    --card: 223 36% 14%;
-    --card-foreground: 214 31% 92%;
-    --popover: 223 36% 14%;
-    --popover-foreground: 214 31% 92%;
-    --primary: 210 91% 70%;
-    --primary-foreground: 224 39% 10%;
-    --secondary: 169 41% 53%;
-    --secondary-foreground: 224 39% 10%;
-    --muted: 222 25% 22%;
-    --muted-foreground: 214 16% 70%;
-    --accent: 43 80% 67%;
-    --accent-foreground: 224 39% 10%;
-    --destructive: 14 76% 67%;
-    --destructive-foreground: 224 39% 10%;
-    --border: 220 24% 32%;
-    --input: 220 24% 32%;
-    --ring: 210 91% 70%;
+    --background: 222 25% 11%;
+    --foreground: 214 30% 92%;
+    --card: 223 20% 15%;
+    --card-foreground: 214 30% 92%;
+    --popover: 223 20% 15%;
+    --popover-foreground: 214 30% 92%;
+    --primary: 177 56% 58%;
+    --primary-foreground: 223 28% 11%;
+    --secondary: 222 14% 25%;
+    --secondary-foreground: 214 18% 86%;
+    --muted: 222 14% 22%;
+    --muted-foreground: 215 12% 70%;
+    --accent: 178 58% 62%;
+    --accent-foreground: 223 28% 11%;
+    --destructive: 9 74% 69%;
+    --destructive-foreground: 223 28% 11%;
+    --border: 221 14% 31%;
+    --input: 221 14% 31%;
+    --ring: 177 56% 58%;
 
-    --reader-bg: 223 32% 18%;
-    --highlight-read: 147 34% 30%;
-    --highlight-focus: 214 55% 36%;
-    --highlight-miss: 35 50% 35%;
+    --reader-bg: 221 17% 20%;
+    --highlight-read: 147 27% 33%;
+    --highlight-focus: 206 45% 38%;
+    --highlight-miss: 36 35% 36%;
 
-    --status-read: 149 45% 63%;
-    --status-partial: 40 85% 70%;
-    --status-not-read: 214 24% 74%;
+    --status-read: 151 44% 69%;
+    --status-partial: 36 76% 72%;
+    --status-not-read: 215 18% 78%;
   }
 
   [data-contrast="high"] {
@@ -96,13 +96,13 @@
     --foreground: 0 0% 0%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 0%;
-    --primary: 222 100% 40%;
+    --primary: 175 100% 28%;
     --primary-foreground: 0 0% 100%;
-    --muted: 0 0% 92%;
+    --muted: 0 0% 90%;
     --muted-foreground: 0 0% 8%;
     --border: 0 0% 20%;
     --reader-bg: 0 0% 100%;
-    --highlight-focus: 52 100% 70%;
+    --highlight-focus: 50 100% 70%;
     --highlight-read: 120 60% 85%;
   }
 
@@ -124,6 +124,9 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow: hidden;
+    background-image:
+      radial-gradient(120% 74% at 50% -18%, hsl(var(--muted) / 0.78), transparent 72%),
+      linear-gradient(to bottom, hsl(var(--background)), hsl(var(--background)));
   }
 
   button,
@@ -136,7 +139,7 @@
 
 @layer utilities {
   .reader-surface {
-    @apply rounded-xl border border-border/80 bg-reader-bg;
+    @apply rounded-xl border border-border/70 bg-reader-bg;
   }
 
   .reader-column {
@@ -144,7 +147,7 @@
   }
 
   .reader-word {
-    @apply rounded-sm px-0.5 py-0.5 transition-colors duration-base ease-standard;
+    @apply rounded-md px-1 py-0.5 transition-colors duration-base ease-standard;
   }
 
   .reader-word-read {
@@ -164,7 +167,7 @@
   }
 
   .topbar-shadow {
-    box-shadow: 0 1px 0 hsl(var(--border) / 0.55);
+    box-shadow: 0 1px 0 hsl(var(--border) / 0.65);
   }
 
   .tap-target {

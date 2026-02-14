@@ -8,7 +8,7 @@ export function Toaster(): React.JSX.Element {
       richColors={false}
       theme="system"
       toastOptions={{
-        className: "border border-border bg-card text-card-foreground",
+        className: "border border-border/80 bg-card text-card-foreground shadow-2",
       }}
     />
   );
