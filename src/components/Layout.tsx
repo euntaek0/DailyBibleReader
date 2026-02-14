@@ -1,36 +1,16 @@
 import type { ReactNode } from "react";
 
+import { AppShell } from "./system/AppShell.tsx";
+import { PageContainer } from "./system/PageContainer.tsx";
+
 interface LayoutProps {
   children: ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
-    <div
-      style={{
-        width: "100%",
-        maxWidth: "480px", // Mobile view simulation on desktop
-        height: "100%",
-        margin: "0 auto",
-        backgroundColor: "var(--color-bg-base)",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        boxShadow: "0 0 40px rgba(0,0,0,0.5)", // Subtle shadow for depth on desktop
-        overflow: "hidden",
-      }}
-    >
-      <main
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "var(--spacing-md)",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {children}
-      </main>
-    </div>
+    <AppShell>
+      <PageContainer withBottomInset={false}>{children}</PageContainer>
+    </AppShell>
   );
 }

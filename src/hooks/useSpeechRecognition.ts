@@ -1,76 +1,134 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+export type SpeechPermissionState = "unknown" | "granted" | "denied";
 
 interface SpeechRecognitionHook {
   isListening: boolean;
   transcript: string;
   error: string | null;
+  isSupported: boolean;
+  permissionState: SpeechPermissionState;
   startListening: () => void;
   stopListening: () => void;
   resetTranscript: () => void;
 }
 
+interface SpeechRecognitionResultAlternativeLike {
+  transcript: string;
+}
+
+interface SpeechRecognitionResultLike {
+  readonly length: number;
+  [index: number]: SpeechRecognitionResultAlternativeLike;
+}
+
+interface SpeechRecognitionEventLike extends Event {
+  readonly results: ArrayLike<SpeechRecognitionResultLike>;
+}
+
+interface SpeechRecognitionErrorEventLike extends Event {
+  readonly error: string;
+}
+
+interface SpeechRecognitionLike {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+}
+
+type SpeechRecognitionConstructorLike = new () => SpeechRecognitionLike;
+
+function getSpeechConstructor(): SpeechRecognitionConstructorLike | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return (window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null) as SpeechRecognitionConstructorLike | null;
+}
+
 export function useSpeechRecognition(): SpeechRecognitionHook {
+  const isSupported = Boolean(getSpeechConstructor());
+
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
-  const [error, setError] = useState<string | null>(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    return SpeechRecognition ? null : "Browser does not support Speech Recognition.";
-  });
+  const [permissionState, setPermissionState] = useState<SpeechPermissionState>("unknown");
+  const [error, setError] = useState<string | null>(() =>
+    isSupported ? null : "이 브라우저는 음성 인식을 지원하지 않습니다."
+  );
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-  const offsetIndexRef = useRef(0); // Track where we "reset" within the continuous stream
-  const lastResultLengthRef = useRef(0); // Track the latest result length to perform soft reset
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const offsetIndexRef = useRef(0);
+  const lastResultLengthRef = useRef(0);
 
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const root = document.documentElement;
+    root.dataset.listening = isListening ? "true" : "false";
 
-    if (!SpeechRecognition) {
+    return () => {
+      root.dataset.listening = "false";
+    };
+  }, [isListening]);
+
+  useEffect(() => {
+    const SpeechRecognitionCtor = getSpeechConstructor();
+
+    if (!SpeechRecognitionCtor) {
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition = new SpeechRecognitionCtor();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = "ko-KR";
 
     recognition.onstart = () => {
       setIsListening(true);
+      setPermissionState("granted");
       setError(null);
     };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let currentTranscript = "";
+    recognition.onresult = (event) => {
       const resultsLength = event.results.length;
-      lastResultLengthRef.current = resultsLength; // Update length tracker
+      lastResultLengthRef.current = resultsLength;
 
       let startIndex = offsetIndexRef.current;
-
-      // Detect engine restart (results array cleared)
-      // If current results length is smaller than our offset, it means the engine likely reset the session.
       if (resultsLength < startIndex) {
-        offsetIndexRef.current = 0;
         startIndex = 0;
+        offsetIndexRef.current = 0;
       }
 
-      for (let i = startIndex; i < resultsLength; i++) {
-        if (event.results[i] && event.results[i][0]) {
-          currentTranscript += event.results[i][0].transcript;
+      let currentTranscript = "";
+      for (let i = startIndex; i < resultsLength; i += 1) {
+        const result = event.results[i];
+        const firstAlternative = result?.[0];
+        if (firstAlternative?.transcript) {
+          currentTranscript += firstAlternative.transcript;
         }
       }
+
       setTranscript(currentTranscript);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error("Speech recognition error", event.error);
-      if (event.error === "not-allowed") {
-        setError("Microphone permission denied.");
+    recognition.onerror = (event) => {
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setPermissionState("denied");
+        setError("마이크 권한이 거부되었습니다.");
         setIsListening(false);
-      } else if (event.error === "no-speech") {
-        // Ignore, but maybe we should keep listening?
-        // Some browsers stop after no-speech.
-      } else {
-        // aborted is common, ignore
+        return;
       }
+
+      if (event.error === "aborted" || event.error === "no-speech") {
+        return;
+      }
+
+      setError("음성 인식 중 오류가 발생했습니다.");
     };
 
     recognition.onend = () => {
@@ -80,39 +138,41 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
     recognitionRef.current = recognition;
 
     return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
+      recognition.onstart = null;
+      recognition.onresult = null;
+      recognition.onerror = null;
+      recognition.onend = null;
+      recognition.abort();
+      recognitionRef.current = null;
     };
   }, []);
 
   const startListening = useCallback(() => {
-    if (recognitionRef.current && !isListening) {
-      try {
-        // Reset state
-        offsetIndexRef.current = 0;
-        lastResultLengthRef.current = 0;
-        setTranscript("");
-        setError(null);
-        recognitionRef.current.start();
-      } catch (err) {
-        console.error("Failed to start recognition:", err);
-        // If it says "already started", we just ensure isListening is true
-        setIsListening(true);
-      }
+    if (!recognitionRef.current || isListening) {
+      return;
+    }
+
+    try {
+      offsetIndexRef.current = 0;
+      lastResultLengthRef.current = 0;
+      setTranscript("");
+      setError(null);
+      recognitionRef.current.start();
+    } catch {
+      setError("마이크를 시작할 수 없어요. 잠시 후 다시 시도해 주세요.");
     }
   }, [isListening]);
 
   const stopListening = useCallback(() => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
+    if (!recognitionRef.current || !isListening) {
+      return;
     }
+
+    recognitionRef.current.stop();
   }, [isListening]);
 
-  // Soft reset: sets the offset to current results length so future updates ignore past results
   const resetTranscript = useCallback(() => {
     setTranscript("");
-    // Move the offset to the end of the current results
     offsetIndexRef.current = lastResultLengthRef.current;
   }, []);
 
@@ -120,19 +180,17 @@ export function useSpeechRecognition(): SpeechRecognitionHook {
     isListening,
     transcript,
     error,
+    isSupported,
+    permissionState,
     startListening,
     stopListening,
     resetTranscript,
   };
 }
 
-// Type definitions...
 declare global {
   interface Window {
-    SpeechRecognition: any;
-    webkitSpeechRecognition: any;
+    SpeechRecognition?: SpeechRecognitionConstructorLike;
+    webkitSpeechRecognition?: SpeechRecognitionConstructorLike;
   }
 }
-type SpeechRecognition = any;
-type SpeechRecognitionEvent = any;
-type SpeechRecognitionErrorEvent = any;

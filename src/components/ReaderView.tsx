@@ -1,7 +1,19 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
+
 import { bibleBookMap } from "../constants/bible.ts";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition.ts";
 import { calculateScore, type MatchResult } from "../utils/textMatcher.ts";
+import { Button } from "./ui/button.tsx";
+import { Card, CardContent } from "./ui/card.tsx";
+import { Progress } from "./ui/progress.tsx";
+import { TopBar } from "./system/TopBar.tsx";
+import { PageContainer } from "./system/PageContainer.tsx";
+import { ReaderText } from "./system/ReaderText.tsx";
+import { MicControl, type MicControlState } from "./system/MicControl.tsx";
+import { ChapterCompleteDialog } from "./system/ChapterCompleteDialog.tsx";
+import { StatusBadge } from "./system/StatusBadge.tsx";
+import { cn } from "../lib/utils.ts";
 
 export interface ChapterVerse {
   index: number;
@@ -26,340 +38,265 @@ export function ReaderView({
   error = null,
   onBack,
   onNextChapter,
-}: ReaderViewProps) {
-  // --- State ---
+}: ReaderViewProps): React.JSX.Element {
   const [activeVerseIndex, setActiveVerseIndex] = useState<number>(-1);
   const [completedVerses, setCompletedVerses] = useState<boolean[]>([]);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const [currentMatchResult, setCurrentMatchResult] = useState<MatchResult | null>(null);
 
-  const { isListening, transcript, startListening, stopListening, resetTranscript } = useSpeechRecognition();
+  const { isListening, transcript, startListening, stopListening, resetTranscript, isSupported, permissionState } =
+    useSpeechRecognition();
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // --- Effects ---
+  const bookName = bibleBookMap[bookKey as keyof typeof bibleBookMap]?.kor ?? bookKey;
+
+  const micState: MicControlState = useMemo(() => {
+    if (!isSupported) {
+      return "unsupported";
+    }
+
+    if (permissionState === "denied") {
+      return "denied";
+    }
+
+    return isListening ? "listening" : "idle";
+  }, [isListening, isSupported, permissionState]);
+
+  const currentMatchResult: MatchResult | null = useMemo(() => {
+    if (!isListening || !transcript || activeVerseIndex < 0 || activeVerseIndex >= verses.length) {
+      return null;
+    }
+
+    const currentVerse = verses[activeVerseIndex];
+    if (!currentVerse) {
+      return null;
+    }
+
+    return calculateScore(currentVerse.text, transcript);
+  }, [activeVerseIndex, isListening, transcript, verses]);
+
+  const completedCount = useMemo(() => completedVerses.filter(Boolean).length, [completedVerses]);
+  const progressValue = verses.length > 0 ? Math.round((completedCount / verses.length) * 100) : 0;
+
+  const scrollToVerse = useCallback((index: number) => {
+    if (!scrollRef.current) {
+      return;
+    }
+
+    const element = scrollRef.current.querySelector<HTMLElement>(`#verse-${index}`);
+    element?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
 
   const advanceToNextVerse = useCallback(() => {
-    if (activeVerseIndex >= verses.length) return;
+    if (activeVerseIndex >= verses.length) {
+      return;
+    }
 
-    // Mark current as complete
-    setCompletedVerses((prev) => {
-      const newCompleted = [...prev];
-      if (activeVerseIndex >= 0) {
-        newCompleted[activeVerseIndex] = true;
+    setCompletedVerses((previous) => {
+      const next = [...previous];
+      if (activeVerseIndex >= 0 && activeVerseIndex < verses.length) {
+        next[activeVerseIndex] = true;
       }
-      return newCompleted;
+      return next;
     });
 
-    setCurrentMatchResult(null);
     resetTranscript();
 
     const nextIndex = activeVerseIndex + 1;
-
     if (nextIndex >= verses.length) {
       setActiveVerseIndex(-1);
       stopListening();
       setShowCompletionModal(true);
-    } else {
-      setActiveVerseIndex(nextIndex);
-      // Ensure UI update before scrolling? Usually fine in React
-      setTimeout(() => {
-        const element = document.getElementById(`verse-${nextIndex}`);
-        element?.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 100);
+      return;
     }
-  }, [activeVerseIndex, verses.length, resetTranscript, stopListening]);
 
-  // Matching Logic
+    setActiveVerseIndex(nextIndex);
+    window.setTimeout(() => scrollToVerse(nextIndex), 80);
+  }, [activeVerseIndex, resetTranscript, scrollToVerse, stopListening, verses.length]);
+
   useEffect(() => {
-    // Clear silence timer on transcript change
     if (silenceTimerRef.current) {
       clearTimeout(silenceTimerRef.current);
       silenceTimerRef.current = null;
     }
 
-    if (activeVerseIndex === -1 || activeVerseIndex >= verses.length || !isListening || !transcript) {
-      if (!transcript) setCurrentMatchResult(null);
+    if (!currentMatchResult || !isListening || !transcript || activeVerseIndex < 0 || activeVerseIndex >= verses.length) {
       return;
     }
 
-    const currentVerse = verses[activeVerseIndex];
-    if (!currentVerse) return;
-
-    const matchResult = calculateScore(currentVerse.text, transcript);
-    setCurrentMatchResult(matchResult);
-
-    // 1. Strict Match: 100% (or very high)
-    if (matchResult.score >= 1.0) {
-      advanceToNextVerse();
-      return;
-    }
-
-    // 2. High Match >= 70% + Silence (End of sentence detection)
-    if (matchResult.score >= 0.7) {
+    if (currentMatchResult.score >= 1) {
       silenceTimerRef.current = setTimeout(() => {
         advanceToNextVerse();
-      }, 1000); // 1s silence confirmation
+      }, 0);
+      return;
     }
-  }, [transcript, activeVerseIndex, verses, isListening, advanceToNextVerse]);
 
-  // Cleanup timer
+    if (currentMatchResult.score >= 0.7) {
+      silenceTimerRef.current = setTimeout(() => {
+        advanceToNextVerse();
+      }, 900);
+    }
+  }, [activeVerseIndex, advanceToNextVerse, currentMatchResult, isListening, transcript, verses.length]);
+
   useEffect(() => {
     return () => {
-      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current);
+      }
     };
   }, []);
 
-  // --- Handlers ---
+  const handleStartReading = (): void => {
+    if (verses.length === 0) {
+      return;
+    }
 
-  const handleStartReading = () => {
-    if (verses.length === 0) return;
-    setActiveVerseIndex(0);
     setShowCompletionModal(false);
+    setActiveVerseIndex(0);
+    setCompletedVerses(new Array(verses.length).fill(false));
     startListening();
-    // resetTranscript is handled by startListening in our new hook, but explicitly calling it doesn't hurt
     resetTranscript();
+    window.setTimeout(() => scrollToVerse(0), 80);
   };
 
-  const handleStopReading = () => {
+  const handleStopReading = (): void => {
     setActiveVerseIndex(-1);
     stopListening();
-    setCurrentMatchResult(null);
   };
 
-  const bookName = bibleBookMap[bookKey as keyof typeof bibleBookMap]?.kor || bookKey;
+  const handleToggleMic = (): void => {
+    if (isListening) {
+      handleStopReading();
+      return;
+    }
 
-  // --- Render ---
+    handleStartReading();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full flex-col">
+        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="본문을 불러오는 중" variant="section" />
+        <PageContainer withBottomInset>
+          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/70 bg-card text-sm text-muted-foreground">
+            본문을 불러오고 있어요…
+          </div>
+        </PageContainer>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full flex-col">
+        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="불러오기 실패" variant="section" />
+        <PageContainer withBottomInset>
+          <div className="reader-column">
+            <Card className="rounded-xl border-destructive/35 bg-destructive/5">
+              <CardContent className="space-y-3 p-4">
+                <p className="text-sm text-foreground">{error}</p>
+                <Button variant="outline" onClick={onBack}>
+                  선택 화면으로 돌아가기
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </PageContainer>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className="animate-fade-in"
-      style={{ padding: "var(--spacing-lg)", paddingBottom: "100px", position: "relative" }}
-    >
-      {/* Header */}
-      <header style={{ marginBottom: "var(--spacing-lg)", display: "flex", alignItems: "center", gap: "1rem" }}>
-        <button
-          onClick={onBack}
-          style={{
-            background: "none",
-            border: "none",
-            fontSize: "1.5rem",
-            color: "var(--color-text-primary)",
-            cursor: "pointer",
-            padding: "8px",
-          }}
-        >
-          ←
-        </button>
-        <h1 className="text-gradient" style={{ fontSize: "var(--text-xl)", fontWeight: 700, margin: 0, flex: 1 }}>
-          {bookName} {chapter}장
-        </h1>
-      </header>
+    <div className="flex h-full flex-col">
+      <TopBar
+        title={`${bookName} ${chapter}장`}
+        subtitle={`${completedCount}/${verses.length}절 완료`}
+        onBack={onBack}
+        compact={isListening}
+        variant="section"
+        rightAction={
+          onNextChapter ? (
+            <Button variant="ghost" size="sm" onClick={onNextChapter} className="hidden sm:inline-flex">
+              다음 장
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          ) : null
+        }
+      />
 
-      {/* Loading */}
-      {isLoading && (
-        <div style={{ textAlign: "center", padding: "4rem" }}>
-          <div
-            className="animate-spin"
-            style={{
-              width: "40px",
-              height: "40px",
-              border: "4px solid var(--color-border)",
-              borderTopColor: "var(--color-primary)",
-              borderRadius: "50%",
-              margin: "0 auto 1rem",
-            }}
-          />
-          <p>Loading Chapter...</p>
-        </div>
-      )}
-
-      {/* Error */}
-      {error && !isLoading && (
-        <div style={{ textAlign: "center", padding: "2rem", color: "#ef4444" }}>
-          <p>{error}</p>
-          <button onClick={onBack} style={{ marginTop: "1rem", padding: "8px 16px", borderRadius: "20px" }}>
-            Go Back
-          </button>
-        </div>
-      )}
-
-      {/* Verses List */}
-      {!isLoading && !error && (
-        <div
-          className="glass-card"
-          style={{ padding: "var(--spacing-lg)", borderRadius: "var(--radius-lg)" }}
-          ref={scrollRef}
-        >
-          {verses.map((verse, index) => {
-            const isActive = index === activeVerseIndex;
-            const isCompleted = completedVerses[index];
-
-            return (
-              <div
-                key={index}
-                id={`verse-${index}`}
-                style={{
-                  marginBottom: "1.5rem",
-                  transition: "all 0.3s ease",
-                  opacity: activeVerseIndex !== -1 && !isActive && !isCompleted ? 0.4 : 1,
-                  transform: isActive ? "scale(1.02)" : "scale(1)",
-                }}
-              >
-                <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
-                  <span
-                    style={{
-                      color: isActive ? "var(--color-primary)" : "var(--color-text-tertiary)",
-                      fontWeight: "bold",
-                      fontSize: "0.8em",
-                      marginTop: "0.4em",
-                    }}
-                  >
-                    {verse.index + 1}
-                  </span>
-                  <p
-                    style={{
-                      lineHeight: "1.8",
-                      fontSize: "var(--text-lg)",
-                      fontFamily: "var(--font-serif)",
-                      color: isCompleted ? "var(--color-primary)" : "var(--color-text-primary)",
-                      margin: 0,
-                      flex: 1,
-                    }}
-                  >
-                    {isActive && currentMatchResult?.matchedIndices
-                      ? verse.text.split(/\s+/).map((word, wIndex) => (
-                          <span
-                            key={wIndex}
-                            style={{
-                              display: "inline-block",
-                              marginRight: "0.25em",
-                              color: currentMatchResult.matchedIndices![wIndex]
-                                ? "var(--color-primary)"
-                                : "var(--color-text-primary)",
-                              textShadow: currentMatchResult.matchedIndices![wIndex]
-                                ? "0 0 10px var(--color-primary-glow)"
-                                : "none",
-                              opacity: currentMatchResult.matchedIndices![wIndex] ? 1 : 0.8,
-                            }}
-                          >
-                            {word}
-                          </span>
-                        ))
-                      : verse.text}
-                  </p>
-                </div>
+      <PageContainer className={cn(isListening ? "pt-3" : "pt-4")}>
+        <div ref={scrollRef} className="reader-column space-y-4">
+          <Card className={cn("rounded-xl border-border/80", isListening ? "bg-muted/20" : "bg-card")}>
+            <CardContent className={cn("space-y-2", isListening ? "p-3" : "p-4")}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-semibold text-foreground">장 진행률</p>
+                {currentMatchResult ? <StatusBadge status={currentMatchResult.status} score={currentMatchResult.score} /> : null}
               </div>
-            );
-          })}
-        </div>
-      )}
+              <Progress value={progressValue} />
+              {transcript ? (
+                <p className="line-clamp-2 text-xs text-muted-foreground" aria-live="polite">
+                  인식: “{transcript}”
+                </p>
+              ) : null}
+            </CardContent>
+          </Card>
 
-      {/* Floating Controls */}
-      {!isLoading && !error && (
-        <div style={{ position: "fixed", bottom: "100px", left: "50%", transform: "translateX(-50%)", zIndex: 50 }}>
-          {!isListening ? (
-            <button
-              onClick={handleStartReading}
-              className="glass-card"
-              style={{
-                padding: "12px 24px",
-                borderRadius: "var(--radius-full)",
-                background: "var(--color-primary)",
-                color: "#fff",
-                fontWeight: 600,
-                border: "none",
-                boxShadow: "0 4px 20px var(--color-primary-glow)",
-              }}
-            >
-              Start Reading
-            </button>
-          ) : (
-            <button
-              onClick={handleStopReading}
-              className="glass-card"
-              style={{
-                padding: "12px 24px",
-                borderRadius: "var(--radius-full)",
-                background: "#ef4444",
-                color: "#fff",
-                fontWeight: 600,
-                border: "none",
-                boxShadow: "0 4px 20px rgba(239, 68, 68, 0.4)",
-              }}
-            >
-              Stop Reading
-            </button>
-          )}
-        </div>
-      )}
+          <section className="space-y-3" aria-label="성경 본문">
+            {verses.map((verse, index) => {
+              const isActive = index === activeVerseIndex;
+              const isCompleted = Boolean(completedVerses[index]);
 
-      {/* Completion Modal */}
-      {showCompletionModal && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.7)",
-            backdropFilter: "blur(5px)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 200,
-          }}
-        >
-          <div
-            className="glass-card animate-slide-up"
-            style={{
-              background: "var(--color-bg-base)",
-              padding: "2rem",
-              borderRadius: "var(--radius-xl)",
-              textAlign: "center",
-              maxWidth: "80%",
-              border: "1px solid var(--color-primary)",
-            }}
-          >
-            <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>🎉</div>
-            <h2 className="text-gradient" style={{ fontSize: "1.5rem", marginBottom: "1rem" }}>
-              Chapter Complete!
-            </h2>
-            <p style={{ color: "var(--color-text-secondary)", marginBottom: "2rem" }}>
-              You have successfully read {bookName} {chapter}장.
-            </p>
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
-              <button
-                onClick={onBack}
-                style={{
-                  padding: "10px 30px",
-                  borderRadius: "var(--radius-full)",
-                  background: "var(--color-bg-elevated)",
-                  color: "var(--color-text-primary)",
-                  border: "1px solid var(--color-border)",
-                  fontWeight: 600,
-                }}
-              >
-                Back
-              </button>
-              {onNextChapter && (
-                <button
-                  onClick={onNextChapter}
-                  style={{
-                    padding: "10px 30px",
-                    borderRadius: "var(--radius-full)",
-                    background: "var(--color-primary)",
-                    color: "white",
-                    border: "none",
-                    fontWeight: 600,
-                  }}
+              return (
+                <article
+                  key={verse.index}
+                  id={`verse-${index}`}
+                  className={cn(
+                    "rounded-xl border p-4 transition-all duration-base ease-standard",
+                    isActive && "reader-surface shadow-2",
+                    isCompleted && "border-status-read/35 bg-status-read/5",
+                    !isActive && !isCompleted && "border-border/70 bg-card",
+                    isListening && !isActive && !isCompleted && "opacity-60"
+                  )}
                 >
-                  Next Chapter
-                </button>
-              )}
-            </div>
+                  <div className="flex items-start gap-3">
+                    <span className={cn("pt-1 text-sm font-semibold", isActive ? "text-primary" : "text-muted-foreground")}>{verse.index + 1}</span>
+                    <ReaderText
+                      text={verse.text}
+                      matchedIndices={isActive ? currentMatchResult?.matchedIndices : undefined}
+                      dimUnmatched={isActive}
+                      className={cn("text-[clamp(21px,5vw,27px)]", isCompleted && "text-status-read")}
+                    />
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+
+          <div className="sticky bottom-4 z-10 rounded-xl border border-border/75 bg-background/92 p-3 shadow-2 backdrop-blur">
+            <MicControl
+              state={micState}
+              onToggle={handleToggleMic}
+              helperText={
+                micState === "idle"
+                  ? "마이크를 눌러 이 장 읽기를 시작하세요."
+                  : micState === "denied"
+                    ? "브라우저 권한 설정에서 마이크를 허용해 주세요."
+                    : undefined
+              }
+            />
           </div>
         </div>
-      )}
+      </PageContainer>
+
+      <ChapterCompleteDialog
+        open={showCompletionModal}
+        onOpenChange={setShowCompletionModal}
+        title="이번 장을 모두 읽었어요"
+        description={`${bookName} ${chapter}장 낭독을 마쳤습니다.`}
+        onBack={onBack}
+        onNextChapter={onNextChapter}
+      />
     </div>
   );
 }

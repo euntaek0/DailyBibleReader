@@ -1,69 +1,97 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
+
 import { getPlanForDate, type PlanDay } from "../constants/yearPlan.ts";
 import { bibleBookMap } from "../constants/bible.ts";
 import { fetchChapter } from "../utils/api.ts";
 import { ReaderView, type ChapterVerse } from "../components/ReaderView.tsx";
+import { TopBar } from "../components/system/TopBar.tsx";
+import { PageContainer } from "../components/system/PageContainer.tsx";
+import { Button } from "../components/ui/button.tsx";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
+import { Progress } from "../components/ui/progress.tsx";
 
-export function YearPlanPage() {
-  console.log("YearPlanPage");
+function formatDateInput(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
+export function YearPlanPage(): React.JSX.Element {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [todaysPlan, setTodaysPlan] = useState<PlanDay | null>(null);
+  const [todayPlan, setTodayPlan] = useState<PlanDay | null>(null);
 
-  // Reading Mode State
   const [isReadingMode, setIsReadingMode] = useState(false);
-  const [currentChapterIndex, setCurrentChapterIndex] = useState(0); // Index within todaysPlan.chapters
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
   const [verses, setVerses] = useState<ChapterVerse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
-    const plan = getPlanForDate(selectedDate);
-    setTodaysPlan(plan);
+    setTodayPlan(getPlanForDate(selectedDate));
   }, [selectedDate]);
 
-  // Load Chapter Content
   useEffect(() => {
-    if (isReadingMode && todaysPlan) {
-      const chapterInfo = todaysPlan.chapters[currentChapterIndex];
-      const loadContent = async () => {
-        setIsLoading(true);
-        setFetchError(null);
+    if (!isReadingMode || !todayPlan) {
+      return;
+    }
 
-        try {
-          const fetchedVerses = await fetchChapter(chapterInfo.book, chapterInfo.chapter);
-          if (fetchedVerses.length === 0) throw new Error("No verses found");
+    const chapterInfo = todayPlan.chapters[currentChapterIndex];
+    if (!chapterInfo) {
+      return;
+    }
 
-          const parsed = fetchedVerses.map((text, i) => ({ index: i, text }));
-          setVerses(parsed);
-        } catch (e) {
-          console.error(e);
-          setFetchError("Failed to load chapter.");
-          setVerses([]);
-        } finally {
-          setIsLoading(false);
+    const loadContent = async (): Promise<void> => {
+      setIsLoading(true);
+      setFetchError(null);
+
+      try {
+        const fetchedVerses = await fetchChapter(chapterInfo.book, chapterInfo.chapter);
+        if (fetchedVerses.length === 0) {
+          throw new Error("No verses found");
         }
-      };
-      loadContent();
-    }
-  }, [isReadingMode, currentChapterIndex, todaysPlan]);
 
-  const handleNextChapter = () => {
-    if (todaysPlan && currentChapterIndex < todaysPlan.chapters.length - 1) {
-      setCurrentChapterIndex((prev) => prev + 1);
-      // setIsReadingMode(true); // Already true
-    } else {
-      // Finished all chapters for today!
-      setIsReadingMode(false);
-      alert("오늘의 읽기를 완료했습니다! 🎉");
+        const parsed = fetchedVerses.map((text, index) => ({ index, text }));
+        setVerses(parsed);
+      } catch (error) {
+        console.error(error);
+        setFetchError("본문을 불러오지 못했어요.");
+        setVerses([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void loadContent();
+  }, [currentChapterIndex, isReadingMode, todayPlan]);
+
+  const completedPlanRatio = useMemo(() => {
+    if (!todayPlan || todayPlan.chapters.length === 0) {
+      return 0;
     }
+
+    return Math.round((currentChapterIndex / todayPlan.chapters.length) * 100);
+  }, [currentChapterIndex, todayPlan]);
+
+  const handleNextChapter = (): void => {
+    if (!todayPlan) {
+      return;
+    }
+
+    if (currentChapterIndex < todayPlan.chapters.length - 1) {
+      setCurrentChapterIndex((previous) => previous + 1);
+      return;
+    }
+
+    setIsReadingMode(false);
+    toast.success("오늘 분량을 모두 읽었어요.");
   };
 
-  const handleBack = () => {
+  const handleBack = (): void => {
     setIsReadingMode(false);
   };
 
-  if (isReadingMode && todaysPlan) {
-    const currentChapter = todaysPlan.chapters[currentChapterIndex];
+  if (isReadingMode && todayPlan) {
+    const currentChapter = todayPlan.chapters[currentChapterIndex];
 
     return (
       <ReaderView
@@ -79,114 +107,95 @@ export function YearPlanPage() {
     );
   }
 
-  // Plan View
   return (
-    <div className="animate-fade-in" style={{ padding: "var(--spacing-lg)", paddingBottom: "100px" }}>
-      <header style={{ marginBottom: "2rem", textAlign: "center" }}>
-        <h1 className="text-gradient" style={{ fontSize: "2rem", fontWeight: 700 }}>
-          Year Plan 📅
-        </h1>
-        <p style={{ color: "var(--color-text-secondary)" }}>1년 1독 도전하기</p>
-      </header>
+    <div className="flex h-full flex-col">
+      <TopBar title="연간 통독" subtitle="날짜별 분량을 선택하고 바로 읽기" variant="page" />
 
-      <div className="glass-card" style={{ padding: "1.5rem", borderRadius: "var(--radius-lg)", marginBottom: "2rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-          <button
-            onClick={() => {
-              const prev = new Date(selectedDate);
-              prev.setDate(prev.getDate() - 1);
-              setSelectedDate(prev);
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: "1.5rem",
-              cursor: "pointer",
-              color: "var(--color-text-primary)",
-            }}
-          >
-            ‹
-          </button>
-
-          <div style={{ textAlign: "center" }}>
-            <h3 style={{ margin: 0, fontSize: "1.2rem", marginBottom: "4px" }}>Day {todaysPlan?.day}</h3>
-            <input
-              type="date"
-              value={selectedDate.toISOString().split("T")[0]}
-              onChange={(e) => {
-                if (e.target.value) {
-                  setSelectedDate(new Date(e.target.value));
-                }
-              }}
-              style={{
-                background: "var(--color-bg-elevated)",
-                border: "1px solid var(--color-border)",
-                color: "var(--color-text-primary)",
-                borderRadius: "4px",
-                padding: "4px 8px",
-                fontFamily: "inherit",
-              }}
-            />
-          </div>
-
-          <button
-            onClick={() => {
-              const next = new Date(selectedDate);
-              next.setDate(next.getDate() + 1);
-              setSelectedDate(next);
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: "1.5rem",
-              cursor: "pointer",
-              color: "var(--color-text-primary)",
-            }}
-          >
-            ›
-          </button>
-        </div>
-
-        <div>
-          <h4 style={{ marginBottom: "1rem", color: "var(--color-text-secondary)" }}>Today's Chapters</h4>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
-            {todaysPlan?.chapters.map((ch, idx) => (
-              <div
-                key={idx}
-                style={{
-                  padding: "1rem",
-                  background: "var(--color-bg-elevated)",
-                  borderRadius: "var(--radius-md)",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <span style={{ fontWeight: 600 }}>
-                  {bibleBookMap[ch.book as keyof typeof bibleBookMap]?.kor} {ch.chapter}장
-                </span>
-                <button
+      <PageContainer>
+        <div className="reader-column space-y-4">
+          <Card className="rounded-xl border-border/80 shadow-1">
+            <CardHeader className="space-y-2">
+              <CardTitle className="text-lg tracking-[-0.01em]">Day {todayPlan?.day ?? "-"}</CardTitle>
+              <CardDescription>날짜를 선택하면 해당 분량으로 이동합니다.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="이전 날짜"
                   onClick={() => {
-                    setCurrentChapterIndex(idx);
-                    setIsReadingMode(true);
-                  }}
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "15px",
-                    background: "var(--color-primary)",
-                    color: "white",
-                    border: "none",
-                    fontSize: "0.9rem",
-                    cursor: "pointer",
+                    const previous = new Date(selectedDate);
+                    previous.setDate(previous.getDate() - 1);
+                    setSelectedDate(previous);
                   }}
                 >
-                  Read
-                </button>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+
+                <input
+                  type="date"
+                  value={formatDateInput(selectedDate)}
+                  onChange={(event) => {
+                    if (event.target.value) {
+                      setSelectedDate(new Date(event.target.value));
+                    }
+                  }}
+                  className="h-11 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label="날짜 선택"
+                />
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label="다음 날짜"
+                  onClick={() => {
+                    const next = new Date(selectedDate);
+                    next.setDate(next.getDate() + 1);
+                    setSelectedDate(next);
+                  }}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </div>
-            ))}
-          </div>
+
+              <Progress value={completedPlanRatio} label="오늘 분량 진행률" />
+            </CardContent>
+          </Card>
+
+          <section className="space-y-3" aria-label="오늘 읽을 장 목록">
+            {todayPlan?.chapters.map((chapterInfo, index) => {
+              const book = bibleBookMap[chapterInfo.book as keyof typeof bibleBookMap];
+              const stateLabel = index < currentChapterIndex ? "완료" : index === currentChapterIndex ? "현재 위치" : "대기";
+
+              return (
+                <Card key={`${chapterInfo.book}-${chapterInfo.chapter}`} className="rounded-xl border-border/75">
+                  <CardContent className="flex items-center justify-between gap-3 p-4">
+                    <div className="space-y-1">
+                      <p className="text-base font-semibold tracking-[-0.01em] text-foreground">
+                        {book?.kor} {chapterInfo.chapter}장
+                      </p>
+                      <p className="text-xs font-medium text-muted-foreground">{stateLabel}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant={index <= currentChapterIndex ? "primary" : "secondary"}
+                      onClick={() => {
+                        setCurrentChapterIndex(index);
+                        setIsReadingMode(true);
+                      }}
+                    >
+                      읽기
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </section>
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 }

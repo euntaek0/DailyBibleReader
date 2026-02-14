@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 export const bibleVersions = {
   cus: "Chinese Union Simplified 简体和合本",
@@ -519,9 +520,6 @@ export const bibleStructure = {
 };
 
 export async function getRandomVerse(language) {
-  // bibleStructure에 포함된 모든 책 키를 가져옵니다.
-  const bookKeys = Object.keys(bibleStructure);
-
   // 50% 확률로 bibleBestList 또는 userSelectedVerses 중 하나를 사용
   const rand = Math.random() < 0.5 ? 0 : 1;
   let randomBibleBest;
