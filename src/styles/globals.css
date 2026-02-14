@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: "Pretendard Variable", "Apple SD Gothic Neo", "Noto Sans KR";
+
+    --background: 210 33% 98%;
+    --foreground: 222 29% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 29% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 29% 15%;
+    --primary: 217 83% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 170 46% 42%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 213 38% 94%;
+    --muted-foreground: 217 20% 42%;
+    --accent: 41 89% 60%;
+    --accent-foreground: 222 29% 15%;
+    --destructive: 16 73% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 29% 86%;
+    --input: 215 29% 86%;
+    --ring: 217 83% 56%;
+
+    --reader-bg: 44 57% 96%;
+    --highlight-read: 146 45% 89%;
+    --highlight-focus: 214 86% 87%;
+    --highlight-miss: 35 95% 88%;
+
+    --status-read: 151 45% 38%;
+    --status-partial: 38 72% 45%;
+    --status-not-read: 216 17% 45%;
+
+    --radius-sm: 0.375rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.875rem;
+    --radius-xl: 1.125rem;
+
+    --shadow-1: 0 1px 2px rgb(15 23 42 / 0.08);
+    --shadow-2: 0 8px 20px rgb(15 23 42 / 0.12);
+    --shadow-3: 0 14px 36px rgb(15 23 42 / 0.18);
+
+    --duration-fast: 120ms;
+    --duration-base: 180ms;
+    --duration-slow: 260ms;
+    --duration-pulse: 2400ms;
+    --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+    --easing-emphasis: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+    --line-height-reader: 1.82;
+    --line-height-ui: 1.5;
+
+    --topbar-height: 3.5rem;
+    --bottom-nav-height: 4.75rem;
+    --content-gutter: 1rem;
+  }
+
+  .dark {
+    --background: 224 39% 10%;
+    --foreground: 214 31% 92%;
+    --card: 223 36% 14%;
+    --card-foreground: 214 31% 92%;
+    --popover: 223 36% 14%;
+    --popover-foreground: 214 31% 92%;
+    --primary: 210 91% 70%;
+    --primary-foreground: 224 39% 10%;
+    --secondary: 169 41% 53%;
+    --secondary-foreground: 224 39% 10%;
+    --muted: 222 25% 22%;
+    --muted-foreground: 214 16% 70%;
+    --accent: 43 80% 67%;
+    --accent-foreground: 224 39% 10%;
+    --destructive: 14 76% 67%;
+    --destructive-foreground: 224 39% 10%;
+    --border: 220 24% 32%;
+    --input: 220 24% 32%;
+    --ring: 210 91% 70%;
+
+    --reader-bg: 223 32% 18%;
+    --highlight-read: 147 34% 30%;
+    --highlight-focus: 214 55% 36%;
+    --highlight-miss: 35 50% 35%;
+
+    --status-read: 149 45% 63%;
+    --status-partial: 40 85% 70%;
+    --status-not-read: 214 24% 74%;
+  }
+
+  [data-contrast="high"] {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --primary: 222 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 8%;
+    --border: 0 0% 20%;
+    --reader-bg: 0 0% 100%;
+    --highlight-focus: 52 100% 70%;
+    --highlight-read: 120 60% 85%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+    line-height: var(--line-height-ui);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .reader-surface {
+    @apply rounded-xl border border-border/80 bg-reader-bg;
+  }
+
+  .reader-column {
+    @apply mx-auto w-full max-w-reader;
+  }
+
+  .reader-word {
+    @apply rounded-sm px-0.5 py-0.5 transition-colors duration-base ease-standard;
+  }
+
+  .reader-word-read {
+    @apply bg-reader-read text-status-read;
+  }
+
+  .reader-word-focus {
+    @apply bg-reader-focus text-foreground ring-1 ring-primary/45;
+  }
+
+  .reader-word-miss {
+    @apply bg-reader-miss;
+  }
+
+  .app-bottom-nav {
+    transition: transform var(--duration-slow) var(--easing-standard), opacity var(--duration-base) var(--easing-standard);
+  }
+
+  .topbar-shadow {
+    box-shadow: 0 1px 0 hsl(var(--border) / 0.55);
+  }
+
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .page-gutter {
+    padding-left: var(--content-gutter);
+    padding-right: var(--content-gutter);
+  }
+
+  html[data-listening="true"] .app-bottom-nav {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
