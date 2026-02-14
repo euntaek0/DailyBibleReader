@@ -29,6 +29,13 @@ export function VerseReader(): React.JSX.Element {
     void loadVerse();
   }, []);
 
+  useEffect(() => {
+    document.documentElement.dataset.listening = String(isListening);
+    return () => {
+      document.documentElement.dataset.listening = "false";
+    };
+  }, [isListening]);
+
   const toggleRecording = (): void => {
     if (isListening) {
       stopListening();
@@ -91,7 +98,7 @@ export function VerseReader(): React.JSX.Element {
       <div className="flex h-full flex-col">
         <TopBar title="오늘의 말씀" subtitle="불러오는 중" variant="page" />
         <PageContainer withBottomInset>
-          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/70 bg-card text-sm text-muted-foreground">
+          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/75 bg-card text-base text-muted-foreground">
             오늘의 구절을 불러오고 있어요…
           </div>
         </PageContainer>
@@ -103,32 +110,39 @@ export function VerseReader(): React.JSX.Element {
     <div className="flex h-full flex-col">
       <TopBar title="오늘의 말씀" subtitle={verse.reference} compact={isListening} variant="page" />
 
-      <PageContainer className={cn(isListening ? "pt-3" : "pt-4")}>
-        <div className="reader-column space-y-4">
+      <PageContainer className={cn(isListening ? "pt-3" : "pt-6")}>
+        <div className="reader-column space-y-6">
           <Card className={cn("reader-surface", isListening ? "shadow-2" : "shadow-1")}>
-            <CardHeader className="space-y-2 pb-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Daily Verse</p>
-              <CardTitle className={cn("tracking-[-0.01em]", isListening ? "text-base" : "text-lg")}>{verse.reference}</CardTitle>
+            <CardHeader className="space-y-3 pb-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Daily Verse</p>
+              <CardTitle className={cn("tracking-[-0.02em]", isListening ? "text-[1.625rem]" : "text-[1.875rem]")}>{verse.reference}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-2">
-              <ReaderText text={verse.text} matchedIndices={matchResult.matchedIndices} dimUnmatched={isListening} />
+            <CardContent className="space-y-6 pt-1">
+              <ReaderText
+                text={verse.text}
+                matchedIndices={matchResult.matchedIndices}
+                dimUnmatched={isListening}
+                className={cn(isListening ? "text-[clamp(1.85rem,8vw,2.5rem)]" : "text-[clamp(2rem,8.2vw,2.7rem)]")}
+              />
 
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-4">
                 <StatusBadge status={matchResult.status} score={matchResult.score} />
-                <span className="text-xs font-medium text-muted-foreground">정확도 {Math.round(matchResult.score * 100)}%</span>
+                <span className="text-base font-semibold text-muted-foreground">정확도 {Math.round(matchResult.score * 100)}%</span>
               </div>
 
-              {transcript ? (
-                <div className="rounded-md border border-border/70 bg-background/85 px-3 py-2 text-sm text-muted-foreground" aria-live="polite">
+              {isListening && transcript ? (
+                <div className="rounded-lg border border-border/70 bg-background/85 px-4 py-3 text-[0.95rem] leading-6 text-muted-foreground" aria-live="polite">
                   인식: “{transcript}”
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">{isListening ? "읽는 중에는 일치한 어절이 바로 강조됩니다." : "낭독을 시작하면 읽은 어절이 색으로 표시됩니다."}</p>
+                <p className="text-base leading-7 text-muted-foreground">
+                  {isListening ? "읽는 중에는 일치한 어절이 바로 강조됩니다." : "낭독을 시작하면 읽은 어절이 색으로 표시됩니다."}
+                </p>
               )}
             </CardContent>
           </Card>
 
-          <div className="sticky bottom-4 z-10 rounded-xl border border-border/75 bg-background/92 p-3 shadow-2 backdrop-blur">
+          <div className="sticky bottom-3 z-10 rounded-xl border border-border/80 bg-background/92 p-5 shadow-2 backdrop-blur">
             <MicControl
               state={micState}
               onToggle={toggleRecording}

@@ -20,7 +20,7 @@ export function ReaderText({
   const words = text.split(/\s+/).filter((word) => word.length > 0);
 
   return (
-    <p className={cn("text-reader leading-reader tracking-[-0.005em] text-foreground", className)}>
+    <p className={cn("text-reader leading-reader font-medium tracking-[-0.012em] text-foreground", className)}>
       {words.map((word, index) => {
         const isRead = Boolean(matchedIndices?.[index]);
         const isFocus = focusIndices.includes(index);

@@ -9,8 +9,10 @@ import { ReaderView, type ChapterVerse } from "../components/ReaderView.tsx";
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
 import { Button } from "../components/ui/button.tsx";
+import { Badge } from "../components/ui/badge.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Progress } from "../components/ui/progress.tsx";
+import { cn } from "../lib/utils.ts";
 
 function formatDateInput(date: Date): string {
   return date.toISOString().split("T")[0];
@@ -112,14 +114,14 @@ export function YearPlanPage(): React.JSX.Element {
       <TopBar title="연간 통독" subtitle="날짜별 분량을 선택하고 바로 읽기" variant="page" />
 
       <PageContainer>
-        <div className="reader-column space-y-4">
-          <Card className="rounded-xl border-border/80 shadow-1">
-            <CardHeader className="space-y-2">
-              <CardTitle className="text-lg tracking-[-0.01em]">Day {todayPlan?.day ?? "-"}</CardTitle>
+        <div className="reader-column space-y-6">
+          <Card className="border-border/80 bg-card shadow-1">
+            <CardHeader className="space-y-3 pb-2">
+              <CardTitle className="text-[clamp(2.25rem,9vw,3rem)] leading-[1.02] tracking-[-0.03em]">Day {todayPlan?.day ?? "-"}</CardTitle>
               <CardDescription>날짜를 선택하면 해당 분량으로 이동합니다.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
+            <CardContent className="space-y-6 pt-2">
+              <div className="flex items-center gap-3">
                 <Button
                   type="button"
                   variant="outline"
@@ -142,7 +144,7 @@ export function YearPlanPage(): React.JSX.Element {
                       setSelectedDate(new Date(event.target.value));
                     }
                   }}
-                  className="h-11 flex-1 rounded-md border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="h-12 flex-1 rounded-xl border border-input bg-background px-4 text-[1.125rem] font-medium tracking-[-0.01em] outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="날짜 선택"
                 />
 
@@ -165,23 +167,29 @@ export function YearPlanPage(): React.JSX.Element {
             </CardContent>
           </Card>
 
-          <section className="space-y-3" aria-label="오늘 읽을 장 목록">
+          <section className="space-y-4" aria-label="오늘 읽을 장 목록">
             {todayPlan?.chapters.map((chapterInfo, index) => {
               const book = bibleBookMap[chapterInfo.book as keyof typeof bibleBookMap];
-              const stateLabel = index < currentChapterIndex ? "완료" : index === currentChapterIndex ? "현재 위치" : "대기";
+              const isCompleted = index < currentChapterIndex;
+              const isCurrent = index === currentChapterIndex;
 
               return (
-                <Card key={`${chapterInfo.book}-${chapterInfo.chapter}`} className="rounded-xl border-border/75">
-                  <CardContent className="flex items-center justify-between gap-3 p-4">
-                    <div className="space-y-1">
-                      <p className="text-base font-semibold tracking-[-0.01em] text-foreground">
+                <Card
+                  key={`${chapterInfo.book}-${chapterInfo.chapter}`}
+                  className={cn("bg-card transition-colors", isCurrent ? "border-primary/45 shadow-1" : "border-border/80")}
+                >
+                  <CardContent className="flex items-center justify-between gap-4 p-6">
+                    <div className="space-y-2">
+                      <p className="text-[1.875rem] font-semibold leading-[1.08] tracking-[-0.025em] text-foreground">
                         {book?.kor} {chapterInfo.chapter}장
                       </p>
-                      <p className="text-xs font-medium text-muted-foreground">{stateLabel}</p>
+                      {isCurrent ? <Badge variant="default">현재 읽을 순서</Badge> : null}
+                      {isCompleted ? <Badge variant="read">완료</Badge> : null}
+                      {!isCurrent && !isCompleted ? <Badge variant="notread">대기</Badge> : null}
                     </div>
                     <Button
-                      size="sm"
-                      variant={index <= currentChapterIndex ? "primary" : "secondary"}
+                      size="md"
+                      variant={isCurrent ? "primary" : "secondary"}
                       onClick={() => {
                         setCurrentChapterIndex(index);
                         setIsReadingMode(true);

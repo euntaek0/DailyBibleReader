@@ -30,7 +30,9 @@ export function ChapterCompleteDialog({
       <DialogContent aria-describedby="chapter-complete-desc" className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription id="chapter-complete-desc">{description}</DialogDescription>
+          <DialogDescription id="chapter-complete-desc" className="text-base leading-7">
+            {description}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={onBack}>
