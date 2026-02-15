@@ -1,5 +1,6 @@
 import { bibleStructure, getRandomVerse } from "../constants/bible.ts";
 import { getPlanForDate, type PlanDay } from "../constants/yearPlan.ts";
+import { useAuthStore } from "../stores/authStore.ts";
 
 type VersionCode = "kor" | "niv" | "kjv" | string;
 
@@ -75,10 +76,11 @@ function buildQueryString(params: Record<string, string | number | undefined>): 
 }
 
 function getFunctionHeaders(): HeadersInit {
+  const accessToken = useAuthStore.getState().accessToken;
   return {
     "Content-Type": "application/json",
     apikey: SUPABASE_ANON_KEY,
-    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+    Authorization: `Bearer ${accessToken || SUPABASE_ANON_KEY}`,
   };
 }
 

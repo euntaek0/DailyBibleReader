@@ -4,10 +4,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { BottomNavigation } from "../../components/BottomNavigation.tsx";
 
 function BottomNavigationDemo(): React.JSX.Element {
-  const [current, setCurrent] = useState<"daily" | "chapter" | "yearPlan" | "settings" | "login">("daily");
+  const [current, setCurrent] = useState<"daily" | "chapter" | "yearPlan" | "settings">("daily");
 
   return (
-    <div className="relative h-[260px] border bg-background">
+      <div className="relative h-[260px] border bg-background">
       <div className="p-4 text-sm text-muted-foreground">현재 탭: {current}</div>
       <BottomNavigation currentView={current} onNavigate={setCurrent} />
     </div>

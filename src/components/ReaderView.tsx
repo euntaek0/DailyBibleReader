@@ -272,7 +272,7 @@ export function ReaderView({
                       text={verse.text}
                       matchedIndices={isActive ? currentMatchResult?.matchedIndices : undefined}
                       dimUnmatched={isActive}
-                      className={cn("text-[clamp(1.25rem,5.1vw,1.75rem)]", isCompleted && "text-status-read")}
+                      className={cn(isCompleted && "text-status-read")}
                     />
                   </div>
                 </article>
