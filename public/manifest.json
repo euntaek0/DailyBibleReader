@@ -4,7 +4,12 @@
   "version": "1.0.0",
   "description": "Daily Bible reading helper with speech recognition.",
   "permissions": ["storage", "activeTab"],
-  "host_permissions": ["https://raw.githubusercontent.com/*"],
+  "host_permissions": [
+    "https://pkiffptztdndavwtbvox.supabase.co/*",
+    "http://127.0.0.1:54321/*",
+    "http://localhost:54321/*",
+    "https://raw.githubusercontent.com/*"
+  ],
   "action": {
     "default_popup": "index.html",
     "default_title": "Daily Bible Reader"

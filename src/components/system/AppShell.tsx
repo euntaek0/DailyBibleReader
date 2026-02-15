@@ -9,7 +9,7 @@ interface AppShellProps {
 
 export function AppShell({ children, className }: AppShellProps): React.JSX.Element {
   return (
-    <div className="flex h-full w-full justify-center bg-[radial-gradient(120%_70%_at_50%_-18%,_hsl(var(--muted)/0.72)_0%,_hsl(var(--background))_62%)]">
+    <div className="flex h-full w-full justify-center bg-background">
       <div
         className={cn(
           "relative flex h-full w-full max-w-[480px] flex-col overflow-hidden bg-background md:my-5 md:h-[calc(100%-2.5rem)] md:rounded-[24px] md:border md:border-border/80 md:shadow-2",
