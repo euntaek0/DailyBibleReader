@@ -20,13 +20,40 @@ const preview: Preview = {
     },
   },
   decorators: [
-    (Story) => (
-      <div style={{ minHeight: "100vh", padding: "16px", display: "flex", justifyContent: "center", background: "hsl(var(--background))" }}>
-        <div style={{ width: "100%", maxWidth: "480px", border: "1px solid hsl(var(--border))", borderRadius: "16px", overflow: "hidden" }}>
-          <Story />
+    (Story, context) => {
+      const isFoundationStory = context.title?.startsWith("Foundation/");
+      const maxWidth = isFoundationStory ? "1120px" : "480px";
+
+      return (
+        <div
+          style={{
+            minHeight: "100vh",
+            padding: "16px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            background: "hsl(var(--background))",
+          }}
+        >
+          <div
+            style={{
+              width: "100%",
+              maxWidth,
+              border: "1px solid hsl(var(--border))",
+              borderRadius: "16px",
+              overflowX: "hidden",
+              overflowY: "auto",
+              maxHeight: "calc(100dvh - 32px)",
+              WebkitOverflowScrolling: "touch",
+              overscrollBehavior: "contain",
+              background: "hsl(var(--background))",
+            }}
+          >
+            <Story />
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   ],
 };
 
