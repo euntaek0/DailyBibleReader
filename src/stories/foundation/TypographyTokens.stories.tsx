@@ -2,148 +2,168 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card.tsx";
 
+type TokenRow = {
+  token: string;
+  varName: string;
+};
+
 function getCssVar(name: string): string {
   if (typeof window === "undefined") return "";
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-const TYPO_TOKENS: Array<{
-  title: string;
-  description: string;
-  rows: Array<{
-    label: string;
-    varName: string;
-    previewClassName?: string;
-    previewStyle?: React.CSSProperties;
-  }>;
-}> = [
-  {
-    title: "Text Scale",
-    description: "UI 텍스트 스케일과 Reader 텍스트 스케일을 CSS 변수로 정의합니다.",
-    rows: [
-      { label: "xs", varName: "--text-xs", previewClassName: "text-ui-xs" },
-      { label: "sm", varName: "--text-sm", previewClassName: "text-ui-sm" },
-      { label: "base", varName: "--text-base", previewClassName: "text-ui-base" },
-      { label: "lg", varName: "--text-lg", previewClassName: "text-ui-lg" },
-      { label: "xl", varName: "--text-xl", previewClassName: "text-ui-xl" },
-      { label: "2xl", varName: "--text-2xl", previewClassName: "text-ui-2xl" },
-      {
-        label: "3xl",
-        varName: "--text-3xl",
-        previewStyle: { fontSize: "var(--text-3xl)", lineHeight: "var(--leading-tight)", letterSpacing: "var(--tracking-tight)", fontWeight: "var(--weight-semibold)" },
-      },
-      {
-        label: "4xl",
-        varName: "--text-4xl",
-        previewStyle: { fontSize: "var(--text-4xl)", lineHeight: "var(--leading-tight)", letterSpacing: "var(--tracking-tight)", fontWeight: "var(--weight-bold)" },
-      },
-      {
-        label: "reader",
-        varName: "--text-reader-min/--text-reader-max",
-        previewClassName: "text-reader",
-      },
-    ],
-  },
-  {
-    title: "Line Heights",
-    description: "컴포넌트 기본 라인하이트 및 보조 라인하이트 토큰입니다.",
-    rows: [
-      { label: "tight", varName: "--leading-tight", previewStyle: { fontSize: "var(--text-lg)", lineHeight: "var(--leading-tight)" } },
-      { label: "snug", varName: "--leading-snug", previewStyle: { fontSize: "var(--text-lg)", lineHeight: "var(--leading-snug)" } },
-      { label: "normal", varName: "--leading-normal", previewStyle: { fontSize: "var(--text-base)", lineHeight: "var(--leading-normal)" } },
-      { label: "relaxed", varName: "--leading-relaxed", previewStyle: { fontSize: "var(--text-base)", lineHeight: "var(--leading-relaxed)" } },
-      { label: "ui", varName: "--line-height-ui", previewStyle: { fontSize: "var(--text-base)", lineHeight: "var(--line-height-ui)" } },
-      { label: "reader", varName: "--line-height-reader", previewStyle: { fontSize: "var(--text-xl)", lineHeight: "var(--line-height-reader)" } },
-    ],
-  },
-  {
-    title: "Tracking & Weights",
-    description: "자주 쓰는 letter-spacing / font-weight 토큰입니다.",
-    rows: [
-      {
-        label: "tracking-tight",
-        varName: "--tracking-tight",
-        previewStyle: { fontSize: "var(--text-xl)", letterSpacing: "var(--tracking-tight)", fontWeight: "var(--weight-semibold)" },
-      },
-      {
-        label: "tracking-snug",
-        varName: "--tracking-snug",
-        previewStyle: { fontSize: "var(--text-xl)", letterSpacing: "var(--tracking-snug)", fontWeight: "var(--weight-semibold)" },
-      },
-      {
-        label: "tracking-normal",
-        varName: "--tracking-normal",
-        previewStyle: { fontSize: "var(--text-xl)", letterSpacing: "var(--tracking-normal)", fontWeight: "var(--weight-semibold)" },
-      },
-      {
-        label: "tracking-wide",
-        varName: "--tracking-wide",
-        previewStyle: { fontSize: "var(--text-sm)", letterSpacing: "var(--tracking-wide)", fontWeight: "var(--weight-semibold)", textTransform: "uppercase" },
-      },
-      {
-        label: "weight-regular",
-        varName: "--weight-regular",
-        previewStyle: { fontSize: "var(--text-base)", fontWeight: "var(--weight-regular)" },
-      },
-      {
-        label: "weight-medium",
-        varName: "--weight-medium",
-        previewStyle: { fontSize: "var(--text-base)", fontWeight: "var(--weight-medium)" },
-      },
-      {
-        label: "weight-semibold",
-        varName: "--weight-semibold",
-        previewStyle: { fontSize: "var(--text-base)", fontWeight: "var(--weight-semibold)" },
-      },
-      {
-        label: "weight-bold",
-        varName: "--weight-bold",
-        previewStyle: { fontSize: "var(--text-base)", fontWeight: "var(--weight-bold)" },
-      },
-    ],
-  },
+const FONT_FAMILY_TOKENS: TokenRow[] = [
+  { token: "font-family-1", varName: "--font-family-1" },
+  { token: "font-family-2", varName: "--font-family-2" },
 ];
+
+const FONT_WEIGHT_TOKENS: TokenRow[] = [
+  { token: "font-weight-400", varName: "--font-weight-400" },
+  { token: "font-weight-500", varName: "--font-weight-500" },
+  { token: "font-weight-700", varName: "--font-weight-700" },
+];
+
+const FONT_SCALE_TOKENS: TokenRow[] = [
+  { token: "font-scale-100", varName: "--font-scale-100" },
+  { token: "font-scale-200", varName: "--font-scale-200" },
+  { token: "font-scale-300", varName: "--font-scale-300" },
+  { token: "font-scale-400", varName: "--font-scale-400" },
+  { token: "font-scale-500", varName: "--font-scale-500" },
+  { token: "font-scale-600", varName: "--font-scale-600" },
+  { token: "font-scale-700", varName: "--font-scale-700" },
+  { token: "font-scale-800", varName: "--font-scale-800" },
+  { token: "font-scale-900", varName: "--font-scale-900" },
+  { token: "font-scale-1000", varName: "--font-scale-1000" },
+  { token: "font-scale-1100", varName: "--font-scale-1100" },
+];
+
+const TYPO_LENGTH_TOKENS: TokenRow[] = [{ token: "line-length", varName: "--line-length" }];
+
+function BasicRow({ row, trailing }: { row: TokenRow; trailing?: React.ReactNode }): React.JSX.Element {
+  const value = getCssVar(row.varName);
+
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-border/70 bg-background/65 p-3">
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-foreground">{row.token}</p>
+        <p className="font-mono text-[11px] text-muted-foreground">{row.varName}</p>
+      </div>
+      <div className="flex items-center gap-3">
+        {trailing}
+        <p className="font-mono text-[11px] text-foreground">{value || "(unavailable)"}</p>
+      </div>
+    </div>
+  );
+}
+
+function FontFamilyRows(): React.JSX.Element {
+  return (
+    <div className="space-y-3">
+      {FONT_FAMILY_TOKENS.map((row, index) => {
+        const family = getCssVar(row.varName);
+        return (
+          <BasicRow
+            key={row.token}
+            row={row}
+            trailing={
+              <span
+                className="max-w-[280px] truncate text-sm text-foreground"
+                style={{ fontFamily: family }}
+                title={family}
+              >
+                {index === 0 ? "Inter preview" : "EB Garamond preview"}
+              </span>
+            }
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function FontScaleRows(): React.JSX.Element {
+  return (
+    <div className="space-y-3">
+      {FONT_SCALE_TOKENS.map((row) => {
+        const value = getCssVar(row.varName);
+        const px = Number.parseInt(value.replace("px", ""), 10);
+        const previewSize = Number.isNaN(px) ? 16 : Math.min(px, 36);
+
+        return (
+          <BasicRow
+            key={row.token}
+            row={row}
+            trailing={
+              <span className="text-foreground" style={{ fontSize: `${previewSize}px`, lineHeight: 1.1 }}>
+                Ag
+              </span>
+            }
+          />
+        );
+      })}
+    </div>
+  );
+}
 
 function TypographyTokensStory(): React.JSX.Element {
   return (
     <div className="space-y-4 p-4">
       <div className="space-y-1">
-        <h2 className="text-[1.35rem] font-semibold tracking-[-0.02em] text-foreground">Typography Tokens</h2>
-        <p className="text-sm leading-6 text-muted-foreground">
-          텍스트 크기/라인하이트/트래킹/웨이트를 토큰화했습니다. 기반 값은 <span className="font-mono text-[0.95em]">src/styles/globals.css</span>에 있습니다.
-        </p>
+        <h2 className="text-[1.35rem] font-semibold tracking-[-0.02em] text-foreground">Typography Primitives (v2)</h2>
+        <p className="text-sm leading-6 text-muted-foreground">font-family, font-weight, font-scale, line-length 토큰을 시안 기준으로 재정의했습니다.</p>
       </div>
 
-      {TYPO_TOKENS.map((section) => (
-        <Card key={section.title} className="border-border/80 bg-card shadow-1">
-          <CardHeader className="space-y-2 pb-3">
-            <CardTitle className="text-lg">{section.title}</CardTitle>
-            <p className="text-sm text-muted-foreground">{section.description}</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {section.rows.map((row) => {
-              const value = row.varName.includes("/")
-                ? `${getCssVar("--text-reader-min")} … ${getCssVar("--text-reader-max")}`
-                : getCssVar(row.varName);
+      <Card className="border-border/80 bg-card shadow-1">
+        <CardHeader className="space-y-2 pb-3">
+          <CardTitle className="text-lg">typography/font-family</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FontFamilyRows />
+        </CardContent>
+      </Card>
 
-              return (
-                <div key={`${section.title}-${row.label}`} className="flex flex-col gap-1 rounded-xl border border-border/70 bg-background/65 p-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-sm font-semibold text-foreground">{row.label}</span>
-                    <span className="font-mono text-[11px] text-muted-foreground">{row.varName}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <p className={row.previewClassName ?? "text-sm"} style={row.previewStyle}>
-                      오늘의 말씀을 읽어보세요. The quick brown fox jumps over the lazy dog.
-                    </p>
-                  </div>
-                  <p className="font-mono text-[11px] leading-4 text-muted-foreground">{value || "(unavailable)"}</p>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      ))}
+      <Card className="border-border/80 bg-card shadow-1">
+        <CardHeader className="space-y-2 pb-3">
+          <CardTitle className="text-lg">typography/font-weight</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {FONT_WEIGHT_TOKENS.map((row) => {
+            const value = getCssVar(row.varName);
+            const numericWeight = Number.parseInt(value, 10);
+            return (
+              <BasicRow
+                key={row.token}
+                row={row}
+                trailing={
+                  <span className="text-sm text-foreground" style={{ fontWeight: Number.isNaN(numericWeight) ? 400 : numericWeight }}>
+                    Weight preview
+                  </span>
+                }
+              />
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/80 bg-card shadow-1">
+        <CardHeader className="space-y-2 pb-3">
+          <CardTitle className="text-lg">typography/font-scale</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FontScaleRows />
+        </CardContent>
+      </Card>
+
+      <Card className="border-border/80 bg-card shadow-1">
+        <CardHeader className="space-y-2 pb-3">
+          <CardTitle className="text-lg">typography/length</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {TYPO_LENGTH_TOKENS.map((row) => (
+            <BasicRow key={row.token} row={row} />
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -158,4 +178,3 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
-

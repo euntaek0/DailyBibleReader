@@ -13,12 +13,27 @@ const config: Config = {
       },
     },
     extend: {
+      screens: {
+        mobile: "360px",
+        desktop: "1440px",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        brand: {
+          100: "hsl(var(--brand-100))",
+          200: "hsl(var(--brand-200))",
+          300: "hsl(var(--brand-300))",
+          400: "hsl(var(--brand-400))",
+          500: "hsl(var(--brand-500))",
+          600: "hsl(var(--brand-600))",
+          700: "hsl(var(--brand-700))",
+          800: "hsl(var(--brand-800))",
+          900: "hsl(var(--brand-900))",
+        },
         neutral: {
           50: "hsl(var(--neutral-50))",
           100: "hsl(var(--neutral-100))",
@@ -31,6 +46,18 @@ const config: Config = {
           800: "hsl(var(--neutral-800))",
           900: "hsl(var(--neutral-900))",
           950: "hsl(var(--neutral-950))",
+          black: "hsl(var(--black))",
+          white: "hsl(var(--white))",
+        },
+        signals: {
+          default: "hsl(var(--signal-default))",
+          "default-light": "hsl(var(--signal-default-light))",
+          warning: "hsl(var(--signal-warning))",
+          "warning-light": "hsl(var(--signal-warning-light))",
+          success: "hsl(var(--signal-success))",
+          "success-light": "hsl(var(--signal-success-light))",
+          error: "hsl(var(--signal-error))",
+          "error-light": "hsl(var(--signal-error-light))",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -166,6 +193,19 @@ const config: Config = {
         gutter: "var(--content-gutter)",
         topbar: "var(--topbar-height)",
         "bottom-nav": "var(--bottom-nav-height)",
+        "spacing-1": "var(--spacing-1)",
+        "spacing-2": "var(--spacing-2)",
+        "spacing-3": "var(--spacing-3)",
+        "spacing-4": "var(--spacing-4)",
+        "spacing-5": "var(--spacing-5)",
+        "spacing-6": "var(--spacing-6)",
+        "spacing-7": "var(--spacing-7)",
+        "spacing-8": "var(--spacing-8)",
+        "spacing-9": "var(--spacing-9)",
+        "spacing-10": "var(--spacing-10)",
+        "spacing-11": "var(--spacing-11)",
+        "spacing-12": "var(--spacing-12)",
+        "spacing-13": "var(--spacing-13)",
         "space-0": "var(--space-0)",
         "space-1": "var(--space-1)",
         "space-2": "var(--space-2)",
@@ -180,6 +220,7 @@ const config: Config = {
       },
       maxWidth: {
         reader: "42rem",
+        line: "var(--line-length)",
       },
       fontFamily: {
         sans: [
@@ -191,6 +232,7 @@ const config: Config = {
           "Segoe UI",
           "sans-serif",
         ],
+        display: ["var(--font-display)", "Georgia", "serif"],
         mono: ["var(--font-mono)"],
       },
       fontSize: {
