@@ -6,10 +6,12 @@ import { bibleBookMap, bibleStructure } from "../constants/bible.ts";
 import { ReaderView, type ChapterVerse } from "../components/ReaderView.tsx";
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
+import { BoardRow } from "../components/ui/board-row.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "../components/ui/sheet.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
+import { cn } from "../lib/utils.ts";
 
 export function ChapterReader(): React.JSX.Element {
   const [mode, setMode] = useState<"selection" | "reading">("selection");
@@ -91,7 +93,7 @@ export function ChapterReader(): React.JSX.Element {
 
       <PageContainer>
         <div className="reader-column space-y-6">
-          <Card className="border-border/80 bg-card shadow-1">
+          <Card className="border-border/80 bg-card">
             <CardHeader className="space-y-3 pb-2">
               <CardTitle className="flex items-center gap-2 text-[1.4rem] leading-[1.15] tracking-[-0.018em]">
                 <BookOpenText className="h-5 w-5 text-primary" />
@@ -113,7 +115,7 @@ export function ChapterReader(): React.JSX.Element {
           </Card>
 
           <Card className="border-border/80 bg-muted/35">
-            <CardContent className="space-y-2 p-5">
+            <CardContent className="space-y-2 p-6">
               <p className="text-sm font-semibold text-foreground">읽기 흐름</p>
               <p className="text-sm leading-6 text-muted-foreground">
                 낭독 중에는 불필요한 탐색 요소를 최소화하고, 읽은 어절만 실시간으로 강조합니다.
@@ -137,45 +139,61 @@ export function ChapterReader(): React.JSX.Element {
             </TabsList>
 
             <TabsContent value="book" className="mt-3">
-              <label htmlFor="book-select" className="mb-2 block text-sm font-medium text-foreground">
-                성경 책
-              </label>
-              <select
-                id="book-select"
-                value={selectedBookKey}
-                onChange={(event) => {
-                  setSelectedBookKey(event.target.value);
-                  setSelectedChapter(1);
-                }}
-                className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
+              <p className="mb-2 text-sm font-medium text-foreground">성경 책</p>
+              <div className="max-h-[44vh] space-y-2 overflow-y-auto px-1">
                 {Object.keys(bibleBookMap).map((key) => {
                   const book = bibleBookMap[key as keyof typeof bibleBookMap];
+                  const isSelected = key === selectedBookKey;
+
                   return (
-                    <option key={key} value={key}>
-                      {book.kor} ({book.niv})
-                    </option>
+                    <BoardRow
+                      key={key}
+                      surface="subtle"
+                      title={`${book.kor} (${book.niv})`}
+                      titleClassName={cn("text-sm font-semibold", isSelected ? "text-primary" : "text-foreground")}
+                      className={cn(isSelected ? "border-primary/45 bg-primary/5" : undefined)}
+                      trailing={
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant={isSelected ? "primary" : "secondaryWeak"}
+                          onClick={() => {
+                            setSelectedBookKey(key);
+                            setSelectedChapter(1);
+                          }}
+                        >
+                          {isSelected ? "선택됨" : "선택"}
+                        </Button>
+                      }
+                    />
                   );
                 })}
-              </select>
+              </div>
             </TabsContent>
 
             <TabsContent value="chapter" className="mt-3">
               <p className="mb-2 text-sm font-medium text-foreground">장 번호</p>
-              <div className="grid grid-cols-6 gap-2">
+              <div className="max-h-[44vh] space-y-2 overflow-y-auto px-1">
                 {chapterOptions.map((number) => (
-                  <button
+                  <BoardRow
                     key={number}
-                    type="button"
-                    onClick={() => setSelectedChapter(number)}
-                    className={`h-10 rounded-lg border text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                      number === selectedChapter
-                        ? "border-primary/40 bg-primary/10 text-primary"
-                        : "border-border bg-background text-foreground hover:bg-muted"
-                    }`}
+                    surface="subtle"
+                    title={`${number}장`}
+                    titleClassName={cn("text-sm font-semibold", number === selectedChapter ? "text-primary" : "text-foreground")}
+                    className={cn(number === selectedChapter ? "border-primary/45 bg-primary/5" : undefined)}
+                    trailing={
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={number === selectedChapter ? "primary" : "secondaryWeak"}
+                        onClick={() => setSelectedChapter(number)}
+                      >
+                        {number === selectedChapter ? "선택됨" : "선택"}
+                      </Button>
+                    }
                   >
-                    {number}
-                  </button>
+                    {/* empty on purpose: content handled by title/trailing */}
+                  </BoardRow>
                 ))}
               </div>
             </TabsContent>

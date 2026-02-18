@@ -6,7 +6,6 @@ import { calculateScore, type MatchResult } from "../utils/textMatcher.ts";
 import { fetchDailyVerse, type DailyVerse } from "../utils/api.ts";
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { ReaderText } from "../components/system/ReaderText.tsx";
 import { MicControl, type MicControlState } from "../components/system/MicControl.tsx";
 import { StatusBadge } from "../components/system/StatusBadge.tsx";
@@ -96,9 +95,9 @@ export function VerseReader(): React.JSX.Element {
   if (isLoading || !verse) {
     return (
       <div className="flex h-full flex-col">
-        <TopBar title="오늘의 말씀" subtitle="불러오는 중" variant="page" />
+        <TopBar title="오늘의 말씀" subtitle="불러오는 중" variant="page" showSubtitle />
         <PageContainer withBottomInset>
-          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/75 bg-card text-sm text-muted-foreground">
+          <div className="reader-column flex min-h-[52vh] items-center justify-center text-sm text-muted-foreground">
             오늘의 구절을 불러오고 있어요…
           </div>
         </PageContainer>
@@ -108,51 +107,50 @@ export function VerseReader(): React.JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar title="오늘의 말씀" subtitle={verse.reference} compact={isListening} variant="page" />
+      <TopBar title="오늘의 말씀" subtitle={verse.reference} compact={isListening} variant="page" showSubtitle />
 
-      <PageContainer className={cn(isListening ? "pt-3" : "pt-6")}>
-        <div className="reader-column space-y-6">
-          <Card className={cn("reader-surface", isListening ? "shadow-2" : "shadow-1")}>
-            <CardHeader className="space-y-3 pb-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Daily Verse</p>
-              <CardTitle className={cn("tracking-[-0.018em]", isListening ? "text-[1.3rem]" : "text-[1.5rem]")}>{verse.reference}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-1">
-              <ReaderText
-                text={verse.text}
-                matchedIndices={matchResult.matchedIndices}
-                dimUnmatched={isListening}
-                className={cn(
-                  "leading-[1.75]",
-                  isListening
-                    ? "text-[clamp(1.0625rem,4.4vw,1.4rem)]"
-                    : "text-[clamp(1.125rem,4.8vw,1.5rem)]"
-                )}
-              />
+      <PageContainer className={cn(isListening ? "pt-3" : "pt-4")}>
+        <div className="reader-column flex min-h-full flex-col">
+          <section className="flex flex-1 flex-col items-center justify-center px-2 text-center">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-500/90">Daily Verse</p>
+            <h2 className={cn("mt-2 font-semibold tracking-[-0.02em] text-foreground", isListening ? "text-[1.4rem]" : "text-[1.55rem]")}>
+              {verse.reference}
+            </h2>
 
-              <div className="flex items-center justify-between gap-4">
-                <StatusBadge status={matchResult.status} score={matchResult.score} />
-                <span className="text-sm font-semibold text-muted-foreground">정확도 {Math.round(matchResult.score * 100)}%</span>
-              </div>
-
-              {isListening && transcript ? (
-                <div className="rounded-lg border border-border/70 bg-background/85 px-4 py-3 text-[0.95rem] leading-6 text-muted-foreground" aria-live="polite">
-                  인식: “{transcript}”
-                </div>
-              ) : (
-                <p className="text-sm leading-6 text-muted-foreground">
-                  {isListening ? "읽는 중에는 일치한 어절이 바로 강조됩니다." : "낭독을 시작하면 읽은 어절이 색으로 표시됩니다."}
-                </p>
+            <ReaderText
+              text={verse.text}
+              matchedIndices={matchResult.matchedIndices}
+              dimUnmatched={isListening}
+              className={cn(
+                "mx-auto mt-5 max-w-[19rem] text-center",
+                isListening
+                  ? "text-[clamp(1.08rem,4.4vw,1.33rem)] leading-[1.52]"
+                  : "text-[clamp(1.12rem,4.6vw,1.38rem)] leading-[1.54]"
               )}
-            </CardContent>
-          </Card>
+            />
 
-          <div className="sticky bottom-3 z-10 rounded-xl border border-border/80 bg-background/92 p-4 shadow-2 backdrop-blur">
+            <div className="mt-5 flex items-center justify-center">
+              <StatusBadge status={matchResult.status} />
+            </div>
+
+            {isListening && transcript ? (
+              <p className="mt-4 max-w-[19rem] text-[0.92rem] leading-[1.45] text-brand-700" aria-live="polite">
+                인식: “{transcript}”
+              </p>
+            ) : (
+              <p className="mt-4 max-w-[19rem] text-sm leading-[1.45] text-muted-foreground">
+                {isListening ? "읽는 중에는 일치한 어절이 바로 강조됩니다." : "낭독을 시작하면 읽은 어절이 색으로 표시됩니다."}
+              </p>
+            )}
+          </section>
+
+          <div className="sticky bottom-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom)+0.35rem)] z-10 pb-1 pt-4">
             <MicControl
               state={micState}
               onToggle={toggleRecording}
               onOpenSettingsGuide={() => toast.info("브라우저 주소창 왼쪽의 사이트 권한에서 마이크를 허용해 주세요.")}
               helperText={helperText}
+              className="mx-auto w-full max-w-[18rem]"
             />
           </div>
         </div>

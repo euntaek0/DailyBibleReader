@@ -8,6 +8,7 @@ import { fetchChapter, fetchYearPlanDay } from "../utils/api.ts";
 import { ReaderView, type ChapterVerse } from "../components/ReaderView.tsx";
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
+import { BoardRow } from "../components/ui/board-row.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Badge } from "../components/ui/badge.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
@@ -155,7 +156,7 @@ export function YearPlanPage(): React.JSX.Element {
 
       <PageContainer>
         <div className="reader-column space-y-6">
-          <Card className="border-border/80 bg-card shadow-1">
+          <Card className="border-border/80 bg-card">
             <CardHeader className="space-y-3 pb-2">
               <CardTitle className="text-[clamp(1.8rem,8vw,2.3rem)] leading-[1.05] tracking-[-0.02em]">Day {todayPlan?.day ?? "-"}</CardTitle>
               <CardDescription>날짜를 선택하면 해당 분량으로 이동합니다.</CardDescription>
@@ -220,19 +221,19 @@ export function YearPlanPage(): React.JSX.Element {
               const isCurrent = index === currentChapterIndex;
 
               return (
-                <Card
+                <BoardRow
                   key={`${chapterInfo.book}-${chapterInfo.chapter}`}
-                  className={cn("bg-card transition-colors", isCurrent ? "border-primary/45 shadow-1" : "border-border/80")}
-                >
-                  <CardContent className="flex items-center justify-between gap-4 p-5">
-                    <div className="space-y-2">
-                      <p className="text-[1.4rem] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground">
-                        {book?.kor} {chapterInfo.chapter}장
-                      </p>
+                  className={cn("transition-colors", isCurrent ? "border-primary/45" : "border-border/80")}
+                  title={`${book?.kor} ${chapterInfo.chapter}장`}
+                  titleClassName="text-[1.4rem] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground"
+                  description={
+                    <div className="flex flex-wrap items-center gap-2">
                       {isCurrent ? <Badge variant="default">현재 읽을 순서</Badge> : null}
                       {isCompleted ? <Badge variant="read">완료</Badge> : null}
                       {!isCurrent && !isCompleted ? <Badge variant="notread">대기</Badge> : null}
                     </div>
+                  }
+                  trailing={
                     <Button
                       size="md"
                       variant={isCurrent ? "primary" : "secondary"}
@@ -243,8 +244,8 @@ export function YearPlanPage(): React.JSX.Element {
                     >
                       읽기
                     </Button>
-                  </CardContent>
-                </Card>
+                  }
+                />
               );
             })}
 

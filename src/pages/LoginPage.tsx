@@ -5,11 +5,12 @@ import { useAuthStore } from "../stores/authStore.ts";
 import { signInWithPassword } from "../utils/auth.ts";
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
+import { BoardRow } from "../components/ui/board-row.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Button } from "../components/ui/button.tsx";
 
 export function LoginPage(): React.JSX.Element {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,14 +20,14 @@ export function LoginPage(): React.JSX.Element {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
-    if (!email || !password) {
-      toast.error("이메일과 비밀번호를 입력해 주세요.");
+    if (!identifier || !password) {
+      toast.error("아이디(또는 이메일)와 비밀번호를 입력해 주세요.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const session = await signInWithPassword(email, password);
+      const session = await signInWithPassword(identifier, password);
       setSession(session);
       toast.success("로그인 되었어요.");
 
@@ -47,7 +48,7 @@ export function LoginPage(): React.JSX.Element {
 
       <PageContainer withBottomInset={false}>
         <div className="reader-column space-y-5">
-          <Card className="border-border/80 bg-card shadow-1">
+          <Card className="border-border/80 bg-card">
             <CardHeader>
               <CardTitle>계정 로그인</CardTitle>
               <CardDescription>이메일 로그인 후 기기 간 읽기 상태를 연동할 수 있습니다.</CardDescription>
@@ -55,16 +56,16 @@ export function LoginPage(): React.JSX.Element {
             <CardContent>
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="space-y-2">
-                  <label htmlFor="login-email" className="text-sm font-semibold text-foreground">
-                    이메일
+                  <label htmlFor="login-id" className="text-sm font-semibold text-foreground">
+                    아이디 또는 이메일
                   </label>
                   <input
-                    id="login-email"
-                    type="email"
-                    autoComplete="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="name@example.com"
+                    id="login-id"
+                    type="text"
+                    autoComplete="username"
+                    value={identifier}
+                    onChange={(event) => setIdentifier(event.target.value)}
+                    placeholder="admin 또는 name@example.com"
                     className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     required
                     disabled={isSubmitting}
@@ -86,16 +87,20 @@ export function LoginPage(): React.JSX.Element {
                   />
                 </div>
 
-                <label className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    checked={keepLoggedIn}
-                    onChange={(event) => setKeepLoggedIn(event.target.checked)}
-                    className="h-4 w-4 accent-primary"
-                    disabled={isSubmitting}
-                  />
-                  로그인 상태 유지
-                </label>
+                <BoardRow
+                  surface="subtle"
+                  title="로그인 상태 유지"
+                  trailing={
+                    <input
+                      type="checkbox"
+                      checked={keepLoggedIn}
+                      onChange={(event) => setKeepLoggedIn(event.target.checked)}
+                      className="h-4 w-4 accent-primary"
+                      aria-label="로그인 상태 유지"
+                      disabled={isSubmitting}
+                    />
+                  }
+                />
 
                 <div className="flex gap-2">
                   <Button type="submit" className="flex-1" loading={isSubmitting}>
@@ -116,7 +121,7 @@ export function LoginPage(): React.JSX.Element {
           </Card>
 
           <Card className="border-border/80 bg-muted/35">
-            <CardContent className="space-y-2 p-5">
+            <CardContent className="space-y-2 p-6">
               <p className="text-sm font-semibold text-foreground">로그인 후 가능한 기능</p>
               <p className="text-sm leading-6 text-muted-foreground">읽기 진행률 동기화, 개인 설정 백업, 계정 기반 알림 설정</p>
             </CardContent>

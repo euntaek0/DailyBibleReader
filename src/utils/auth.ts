@@ -4,6 +4,7 @@ const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL ?? "").trim().replace(/\
 const SUPABASE_ANON_KEY = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? "").trim();
 
 const AUTH_BASE_URL = SUPABASE_URL ? `${SUPABASE_URL}/auth/v1` : "";
+const DEFAULT_LOGIN_ID_DOMAIN = "dailyreader.com";
 
 function requireAuthConfig(): void {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -36,11 +37,12 @@ function toErrorMessage(payload: unknown, fallback: string): string {
 
 export async function signInWithPassword(email: string, password: string): Promise<SupabaseAuthSession> {
   requireAuthConfig();
+  const normalizedEmail = normalizeLoginIdentifier(email);
 
   const response = await fetch(`${AUTH_BASE_URL}/token?grant_type=password`, {
     method: "POST",
     headers: baseHeaders(),
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email: normalizedEmail, password }),
   });
 
   const payload: unknown = await response.json().catch(() => null);
@@ -50,6 +52,20 @@ export async function signInWithPassword(email: string, password: string): Promi
   }
 
   return payload as SupabaseAuthSession;
+}
+
+function normalizeLoginIdentifier(identifier: string): string {
+  const trimmed = identifier.trim();
+
+  if (!trimmed) {
+    return trimmed;
+  }
+
+  if (trimmed.includes("@")) {
+    return trimmed;
+  }
+
+  return `${trimmed.toLowerCase()}@${DEFAULT_LOGIN_ID_DOMAIN}`;
 }
 
 export async function refreshSession(refreshToken: string): Promise<SupabaseAuthSession> {
@@ -69,4 +85,3 @@ export async function refreshSession(refreshToken: string): Promise<SupabaseAuth
 
   return payload as SupabaseAuthSession;
 }
-

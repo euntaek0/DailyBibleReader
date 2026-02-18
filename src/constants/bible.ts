@@ -523,6 +523,7 @@ export async function getRandomVerse(language) {
   // 50% 확률로 bibleBestList 또는 userSelectedVerses 중 하나를 사용
   const rand = Math.random() < 0.5 ? 0 : 1;
   let randomBibleBest;
+  const chromeApi = typeof globalThis !== "undefined" ? globalThis.chrome : undefined;
 
   // const chrome = (window as any).chrome;
   // chrome.storage.local.clear(() => {
@@ -533,13 +534,13 @@ export async function getRandomVerse(language) {
     // bibleBestList에서 랜덤 선택
     randomBibleBest = bibleBestList[Math.floor(Math.random() * bibleBestList.length)];
   } else {
-    if (chrome?.storage?.local?.get) {
+    if (chromeApi?.storage?.local?.get) {
       try {
         // chrome.storage.local.get를 Promise로 래핑하여 비동기 처리합니다.
         randomBibleBest = await new Promise((resolve, reject) => {
-          chrome.storage.local.get("userSelectedVerses", (result) => {
-            if (chrome.runtime?.lastError) {
-              return reject(chrome.runtime.lastError);
+          chromeApi.storage.local.get("userSelectedVerses", (result) => {
+            if (chromeApi.runtime?.lastError) {
+              return reject(chromeApi.runtime.lastError);
             }
             if (result.userSelectedVerses && result.userSelectedVerses.length > 0) {
               resolve(result.userSelectedVerses[Math.floor(Math.random() * result.userSelectedVerses.length)]);

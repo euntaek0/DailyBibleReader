@@ -19,7 +19,7 @@ export function MicControl({ state, onToggle, onOpenSettingsGuide, className, he
     return (
       <Card className={cn("border-border/80 bg-card", className)}>
         <CardContent className="flex items-start gap-3 p-4">
-          <ShieldAlert className="mt-0.5 h-5 w-5 text-muted-foreground" aria-hidden="true" />
+          <ShieldAlert className="mt-0.5 h-5 w-5 text-signals-warning" aria-hidden="true" />
           <div className="flex-1 space-y-2">
             <p className="text-sm font-semibold text-foreground">
               {state === "denied" ? "마이크 권한이 꺼져 있어요" : "현재 브라우저에서 음성 인식을 지원하지 않아요"}
@@ -46,21 +46,27 @@ export function MicControl({ state, onToggle, onOpenSettingsGuide, className, he
       <Button
         size="icon"
         className={cn(
-          "relative h-[78px] w-[78px] rounded-full",
+          "relative h-[70px] w-[70px] rounded-full",
           state === "listening"
-            ? "bg-accent text-accent-foreground shadow-[0_0_0_10px_hsl(var(--accent)/0.14)]"
-            : "bg-primary text-primary-foreground shadow-[0_0_0_10px_hsl(var(--primary)/0.12)]"
+            ? "bg-signals-success text-white shadow-[0_0_0_8px_hsl(var(--signal-success)/0.14),0_10px_24px_-12px_hsl(var(--signal-success)/0.52)] hover:brightness-[0.95]"
+            : "bg-brand-500 text-white shadow-[0_0_0_8px_hsl(var(--primary)/0.14),0_10px_24px_-12px_hsl(var(--primary)/0.48)] hover:bg-brand-400"
         )}
         onClick={onToggle}
         aria-label={state === "listening" ? "낭독 중지" : "낭독 시작"}
         aria-pressed={state === "listening"}
       >
-        {state === "listening" ? <Square className="h-4 w-4" /> : <Mic className="h-6 w-6" />}
+        {state === "listening" ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-5 w-5" />}
         {state === "listening" ? (
-          <span className="pointer-events-none absolute inset-0 -z-10 rounded-full border border-accent/40 animate-mic-pulse" aria-hidden="true" />
+          <span className="pointer-events-none absolute inset-0 -z-10 rounded-full border border-signals-success/40 animate-mic-pulse" aria-hidden="true" />
         ) : null}
       </Button>
-      <div className="text-center text-sm font-medium leading-6 text-muted-foreground" aria-live="polite">
+      <div
+        className={cn(
+          "text-center text-[0.92rem] font-medium leading-[1.45]",
+          state === "listening" ? "text-signals-success" : "text-muted-foreground"
+        )}
+        aria-live="polite"
+      >
         {state === "listening" ? "듣고 있어요. 천천히 읽어주세요." : helperText ?? "마이크를 눌러 낭독을 시작하세요."}
       </div>
     </div>

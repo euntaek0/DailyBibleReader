@@ -22,7 +22,9 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       const isFoundationStory = context.title?.startsWith("Foundation/");
-      const maxWidth = isFoundationStory ? "1120px" : "480px";
+      const isWideUiStory = context.title === "UI/Button" || context.title === "UI/Badge" || context.title === "UI/Board Row";
+      const isWideStory = isFoundationStory || isWideUiStory;
+      const maxWidth = isWideStory ? "1320px" : "480px";
 
       return (
         <div
@@ -41,7 +43,7 @@ const preview: Preview = {
               maxWidth,
               border: "1px solid hsl(var(--border))",
               borderRadius: "16px",
-              overflowX: "hidden",
+              overflowX: isWideStory ? "auto" : "hidden",
               overflowY: "auto",
               maxHeight: "calc(100dvh - 32px)",
               WebkitOverflowScrolling: "touch",

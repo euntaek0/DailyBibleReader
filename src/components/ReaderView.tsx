@@ -224,8 +224,13 @@ export function ReaderView({
         variant="section"
         rightAction={
           onNextChapter ? (
-            <Button variant="ghost" size="sm" onClick={onNextChapter} className="hidden sm:inline-flex">
-              다음 장
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onNextChapter}
+              className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              aria-label="다음 장"
+            >
               <ArrowRight className="h-4 w-4" />
             </Button>
           ) : null
@@ -234,7 +239,7 @@ export function ReaderView({
 
       <PageContainer className={cn(isListening ? "pt-3" : "pt-6")}>
         <div ref={scrollRef} className="reader-column space-y-6">
-          <Card className={cn("border-border/80 bg-card/96", isListening ? "shadow-2" : "shadow-1")}>
+          <Card className={cn("border-border/80 bg-card/96", isListening ? "shadow-2" : undefined)}>
             <CardContent className={cn("space-y-4", isListening ? "p-4" : "p-5")}>
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm font-semibold text-foreground">장 진행률</p>

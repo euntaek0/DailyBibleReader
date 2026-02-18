@@ -8,51 +8,66 @@ interface TopBarProps {
   title: string;
   subtitle?: string;
   onBack?: () => void;
+  leftAction?: ReactNode;
   rightAction?: ReactNode;
   compact?: boolean;
   variant?: "page" | "section";
+  showSubtitle?: boolean;
 }
 
 export function TopBar({
   title,
   subtitle,
   onBack,
+  leftAction,
   rightAction,
   compact = false,
   variant = "page",
+  showSubtitle = false,
 }: TopBarProps): React.JSX.Element {
   const isPage = variant === "page";
   const titleClass = compact
-    ? "text-[1.375rem] leading-[1.16] tracking-[-0.018em]"
+    ? "text-[1.02rem] leading-[1.2] tracking-[-0.012em]"
     : isPage
-      ? "text-[clamp(1.5rem,6.2vw,1.95rem)] leading-[1.1] tracking-[-0.02em]"
-      : "text-[1.4rem] leading-[1.14] tracking-[-0.018em]";
-  const subtitleClass = compact ? "text-sm leading-[1.45]" : isPage ? "text-sm leading-[1.45]" : "text-sm leading-[1.45]";
+      ? "text-[1.15rem] leading-[1.2] tracking-[-0.014em]"
+      : "text-[1.08rem] leading-[1.2] tracking-[-0.012em]";
+  const subtitleClass = "text-[0.78rem] leading-[1.35] text-muted-foreground";
 
   return (
     <header
       className={cn(
-        "topbar-shadow sticky top-0 z-20 bg-background/94 px-[var(--content-gutter)] backdrop-blur supports-[backdrop-filter]:bg-background/90",
+        "sticky top-0 z-30 border-b border-border/70 bg-background/96 supports-[backdrop-filter]:bg-background/92",
         compact
-          ? "pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]"
-          : isPage
-            ? "pb-3 pt-[calc(env(safe-area-inset-top)+1.1rem)]"
-            : "pb-3 pt-[calc(env(safe-area-inset-top)+1rem)]"
+          ? "pt-[calc(env(safe-area-inset-top)+0.25rem)]"
+          : "pt-[calc(env(safe-area-inset-top)+0.4rem)]",
+        showSubtitle && subtitle ? "pb-2" : "pb-1.5"
       )}
     >
-      <div className="flex min-h-[var(--topbar-height)] items-center gap-3">
-        {onBack ? (
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label="뒤로 가기" className="tap-target h-10 w-10 rounded-full text-muted-foreground hover:text-foreground">
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        ) : null}
-        <div className="min-w-0 flex-1">
-          <h1 className={cn("truncate font-semibold text-foreground", titleClass)}>
-            {title}
-          </h1>
-          {subtitle ? <p className={cn("truncate pt-1 text-muted-foreground", subtitleClass)}>{subtitle}</p> : null}
+      <div className="reader-column page-gutter">
+        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2">
+          <div className="flex h-10 w-10 items-center justify-start">
+            {onBack ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onBack}
+                aria-label="뒤로 가기"
+                className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            ) : leftAction ? (
+              leftAction
+            ) : null}
+          </div>
+
+          <div className="min-w-0 text-center">
+            <h1 className={cn("truncate font-semibold text-foreground", titleClass)}>{title}</h1>
+            {showSubtitle && subtitle ? <p className={cn("mt-0.5 line-clamp-1", subtitleClass)}>{subtitle}</p> : null}
+          </div>
+
+          <div className="flex h-10 w-10 items-center justify-end">{rightAction ?? null}</div>
         </div>
-        {rightAction ? <div className="shrink-0">{rightAction}</div> : null}
       </div>
     </header>
   );

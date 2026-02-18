@@ -20,7 +20,7 @@ export function ReaderText({
   const words = text.split(/\s+/).filter((word) => word.length > 0);
 
   return (
-    <p className={cn("text-reader leading-reader font-medium tracking-[-0.012em] text-foreground", className)}>
+    <p className={cn("text-reader leading-reader font-medium tracking-[-0.01em] text-foreground", className)}>
       {words.map((word, index) => {
         const isRead = Boolean(matchedIndices?.[index]);
         const isFocus = focusIndices.includes(index);
@@ -34,7 +34,7 @@ export function ReaderText({
               isRead && "reader-word-read",
               isFocus && "reader-word-focus",
               isMissed && "reader-word-miss",
-              dimUnmatched && !isRead && !isFocus && "text-foreground/72"
+              dimUnmatched && !isRead && !isFocus && "text-foreground/78"
             )}
           >
             {word}

@@ -266,7 +266,7 @@
     --easing-emphasis: cubic-bezier(0.2, 0.8, 0.2, 1);
     --easing-exit: cubic-bezier(0.4, 0, 1, 1);
 
-    --line-height-reader: 1.86;
+    --line-height-reader: 1.62;
     --line-height-ui: 1.5;
 
     --topbar-height: calc(var(--spacing-10) / 16px * 1rem);
@@ -370,19 +370,19 @@
   }
 
   .reader-word {
-    @apply rounded-md px-1 py-0.5 transition-colors duration-base ease-standard;
+    @apply rounded-md transition-colors duration-base ease-standard;
   }
 
   .reader-word-read {
-    @apply bg-reader-read text-status-read;
+    @apply bg-reader-read px-1 py-0.5 text-status-read;
   }
 
   .reader-word-focus {
-    @apply bg-reader-focus text-foreground ring-1 ring-primary/45;
+    @apply bg-reader-focus px-1 py-0.5 text-foreground ring-1 ring-primary/45;
   }
 
   .reader-word-miss {
-    @apply bg-reader-miss;
+    @apply bg-reader-miss px-1 py-0.5;
   }
 
   .app-bottom-nav {

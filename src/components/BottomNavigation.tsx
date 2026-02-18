@@ -18,7 +18,7 @@ export function BottomNavigation({ currentView, onNavigate }: BottomNavigationPr
   return (
     <nav
       aria-label="주요 탐색"
-      className="app-bottom-nav absolute inset-x-0 bottom-0 z-40 min-h-[var(--bottom-nav-height)] border-t border-border/80 bg-card/95 px-2 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2 backdrop-blur"
+      className="app-bottom-nav absolute inset-x-0 bottom-0 z-40 min-h-[var(--bottom-nav-height)] px-2 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2"
     >
       <ul className="grid grid-cols-4 gap-1.5">
         {navItems.map(({ key, label, icon: Icon }) => {
@@ -31,13 +31,13 @@ export function BottomNavigation({ currentView, onNavigate }: BottomNavigationPr
                 onClick={() => onNavigate(key)}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "tap-target flex w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] font-semibold tracking-[-0.01em] transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  "tap-target flex w-full flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-xs font-semibold tracking-[-0.01em] transition-colors duration-fast ease-standard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Icon className="h-[18px] w-[18px]" aria-hidden="true" strokeWidth={2.0} />
+                <Icon className="h-[21px] w-[21px]" aria-hidden="true" strokeWidth={2.1} />
                 <span>{label}</span>
-                <span className={cn("h-1 w-1 rounded-full", active ? "bg-primary" : "bg-transparent")} aria-hidden="true" />
+                <span className={cn("h-1.5 w-1.5 rounded-full", active ? "bg-primary" : "bg-transparent")} aria-hidden="true" />
               </button>
             </li>
           );

@@ -6,16 +6,14 @@ interface StatusBadgeProps {
   score?: number;
 }
 
-export function StatusBadge({ status, score }: StatusBadgeProps): React.JSX.Element {
-  const percentageText = typeof score === "number" ? ` · ${Math.round(score * 100)}%` : "";
-
+export function StatusBadge({ status }: StatusBadgeProps): React.JSX.Element {
   if (status === "READ") {
-    return <Badge variant="read">읽음{percentageText}</Badge>;
+    return <Badge variant="read">읽음</Badge>;
   }
 
   if (status === "PARTIAL") {
-    return <Badge variant="partial">부분 일치{percentageText}</Badge>;
+    return <Badge variant="partial">부분 일치</Badge>;
   }
 
-  return <Badge variant="notread">읽기 전</Badge>;
+  return <Badge variant="primaryWeak">읽기 전</Badge>;
 }

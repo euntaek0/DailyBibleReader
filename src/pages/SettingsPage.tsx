@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
+import { BoardRow } from "../components/ui/board-row.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Button } from "../components/ui/button.tsx";
 
@@ -30,13 +31,19 @@ export function SettingsPage(): React.JSX.Element {
     toast.success("설정이 저장되었어요.");
   };
 
+  const fontScaleLabelMap: Record<FontScale, string> = {
+    small: "작게",
+    normal: "보통",
+    large: "크게",
+  };
+
   return (
     <div className="flex h-full flex-col">
       <TopBar title="설정" subtitle="앱 설정과 개인정보를 관리하세요" variant="page" />
 
       <PageContainer>
         <div className="reader-column space-y-5">
-          <Card className="border-border/80 bg-card shadow-1">
+          <Card className="border-border/80 bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -45,45 +52,60 @@ export function SettingsPage(): React.JSX.Element {
               <CardDescription>읽기 환경과 알림 옵션을 조정할 수 있습니다.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="font-scale" className="text-sm font-semibold text-foreground">
-                  기본 글자 크기
-                </label>
-                <select
-                  id="font-scale"
-                  value={fontScale}
-                  onChange={(event) => setFontScale(event.target.value as FontScale)}
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                >
-                  <option value="small">작게</option>
-                  <option value="normal">보통</option>
-                  <option value="large">크게</option>
-                </select>
-              </div>
+              <BoardRow
+                surface="subtle"
+                collapsible
+                title="기본 글자 크기"
+                description={`현재: ${fontScaleLabelMap[fontScale]}`}
+                defaultOpen
+              >
+                <div className="grid grid-cols-3 gap-2">
+                  {(["small", "normal", "large"] as const).map((scale) => (
+                    <Button
+                      key={scale}
+                      type="button"
+                      size="sm"
+                      variant={fontScale === scale ? "primary" : "secondaryWeak"}
+                      onClick={() => setFontScale(scale)}
+                      aria-pressed={fontScale === scale}
+                    >
+                      {fontScaleLabelMap[scale]}
+                    </Button>
+                  ))}
+                </div>
+              </BoardRow>
 
-              <label className="flex items-center justify-between gap-3 rounded-lg border border-border/70 bg-background/70 px-3 py-2.5">
-                <span className="text-sm font-medium text-foreground">고대비 모드</span>
-                <input
-                  type="checkbox"
-                  checked={highContrast}
-                  onChange={(event) => setHighContrast(event.target.checked)}
-                  className="h-4 w-4 accent-primary"
-                />
-              </label>
+              <BoardRow
+                surface="subtle"
+                title="고대비 모드"
+                trailing={
+                  <input
+                    type="checkbox"
+                    checked={highContrast}
+                    onChange={(event) => setHighContrast(event.target.checked)}
+                    className="h-4 w-4 accent-primary"
+                    aria-label="고대비 모드"
+                  />
+                }
+              />
 
-              <label className="flex items-center justify-between gap-3 rounded-lg border border-border/70 bg-background/70 px-3 py-2.5">
-                <span className="text-sm font-medium text-foreground">매일 읽기 알림 받기</span>
-                <input
-                  type="checkbox"
-                  checked={dailyReminder}
-                  onChange={(event) => setDailyReminder(event.target.checked)}
-                  className="h-4 w-4 accent-primary"
-                />
-              </label>
+              <BoardRow
+                surface="subtle"
+                title="매일 읽기 알림 받기"
+                trailing={
+                  <input
+                    type="checkbox"
+                    checked={dailyReminder}
+                    onChange={(event) => setDailyReminder(event.target.checked)}
+                    className="h-4 w-4 accent-primary"
+                    aria-label="매일 읽기 알림 받기"
+                  />
+                }
+              />
             </CardContent>
           </Card>
 
-          <Card className="border-border/80 bg-card shadow-1">
+          <Card className="border-border/80 bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -117,23 +139,31 @@ export function SettingsPage(): React.JSX.Element {
                 />
               </div>
 
-              <label className="flex items-center justify-between gap-3 rounded-lg border border-border/70 bg-background/70 px-3 py-2.5">
-                <span className="text-sm font-medium text-foreground">서비스 개선을 위한 사용 데이터 공유</span>
-                <input
-                  type="checkbox"
-                  checked={shareUsageData}
-                  onChange={(event) => setShareUsageData(event.target.checked)}
-                  className="h-4 w-4 accent-primary"
-                />
-              </label>
+              <BoardRow
+                surface="subtle"
+                title="서비스 개선을 위한 사용 데이터 공유"
+                trailing={
+                  <input
+                    type="checkbox"
+                    checked={shareUsageData}
+                    onChange={(event) => setShareUsageData(event.target.checked)}
+                    className="h-4 w-4 accent-primary"
+                    aria-label="서비스 개선을 위한 사용 데이터 공유"
+                  />
+                }
+              />
 
-              <div className="rounded-lg border border-border/70 bg-background/75 px-3 py-3">
-                <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <Lock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                  보안
-                </p>
-                <p className="pt-1 text-sm leading-6 text-muted-foreground">비밀번호 변경과 로그인 기기 관리는 로그인 페이지에서 진행할 수 있습니다.</p>
-              </div>
+              <BoardRow
+                surface="subtle"
+                collapsible
+                leading={<Lock className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
+                leadingClassName="text-muted-foreground"
+                title="보안"
+                description="비밀번호 변경과 로그인 기기 관리"
+                defaultOpen={false}
+              >
+                <p className="text-sm leading-6 text-muted-foreground">비밀번호 변경과 로그인 기기 관리는 로그인 페이지에서 진행할 수 있습니다.</p>
+              </BoardRow>
             </CardContent>
           </Card>
 
