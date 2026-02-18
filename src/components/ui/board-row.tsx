@@ -10,6 +10,7 @@ export interface BoardRowProps extends Omit<React.HTMLAttributes<HTMLDivElement>
   description?: React.ReactNode;
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
+  control?: React.ReactNode;
   collapsible?: boolean;
   defaultOpen?: boolean;
   open?: boolean;
@@ -29,6 +30,7 @@ function BoardRow({
   description,
   leading,
   trailing,
+  control,
   collapsible = false,
   defaultOpen = false,
   open,
@@ -47,6 +49,7 @@ function BoardRow({
   const [internalOpen, setInternalOpen] = React.useState(defaultOpen);
   const expanded = isControlled ? Boolean(open) : internalOpen;
   const contentId = React.useId();
+  const rightControl = control ?? trailing;
 
   const setExpanded = React.useCallback(
     (next: boolean) => {
@@ -61,8 +64,8 @@ function BoardRow({
 
   const baseSurfaceClassName =
     surface === "subtle"
-      ? "border-border/70 bg-background/70 shadow-none"
-      : "border-border/80 bg-card shadow-1";
+      ? "border-border/60 bg-background"
+      : "border-border/80 bg-card";
 
   const headerContent = (
     <>
@@ -71,10 +74,10 @@ function BoardRow({
           {leading ? <span className={cn("inline-flex shrink-0 items-center text-brand-500", leadingClassName)}>{leading}</span> : null}
           <p className={cn("truncate text-sm font-semibold text-foreground", titleClassName)}>{title}</p>
         </div>
-        {description ? <div className={cn("pt-1 text-sm leading-6 text-muted-foreground", descriptionClassName)}>{description}</div> : null}
+        {description ? <div className={cn("pt-1 text-sm leading-[1.45] text-muted-foreground", descriptionClassName)}>{description}</div> : null}
       </div>
 
-      {trailing ? <div className="shrink-0">{trailing}</div> : null}
+      {rightControl ? <div className="shrink-0">{rightControl}</div> : null}
     </>
   );
 
@@ -111,7 +114,7 @@ function BoardRow({
       )}
 
       {collapsible ? (
-        <div id={contentId} className={cn("border-t border-border/70 bg-muted/20 px-4 py-3", !expanded && "hidden", contentClassName)}>
+        <div id={contentId} className={cn("border-t border-border/60 bg-muted/20 px-4 py-3", !expanded && "hidden", contentClassName)}>
           {children}
         </div>
       ) : null}

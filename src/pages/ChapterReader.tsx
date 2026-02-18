@@ -8,7 +8,6 @@ import { TopBar } from "../components/system/TopBar.tsx";
 import { PageContainer } from "../components/system/PageContainer.tsx";
 import { BoardRow } from "../components/ui/board-row.tsx";
 import { Button } from "../components/ui/button.tsx";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "../components/ui/sheet.tsx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs.tsx";
 import { cn } from "../lib/utils.ts";
@@ -89,21 +88,22 @@ export function ChapterReader(): React.JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar title="장 읽기" subtitle="책과 장을 고른 뒤 바로 낭독하세요" variant="page" />
+      <TopBar title="장 읽기" subtitle="책과 장을 고른 뒤 바로 낭독하세요" variant="page" appearance="translucent" />
 
-      <PageContainer>
-        <div className="reader-column space-y-6">
-          <Card className="border-border/80 bg-card">
-            <CardHeader className="space-y-3 pb-2">
-              <CardTitle className="flex items-center gap-2 text-[1.4rem] leading-[1.15] tracking-[-0.018em]">
+      <PageContainer withBottomInset>
+        <div className="reader-column space-y-4">
+          <section className="space-y-4 rounded-2xl border border-border/75 bg-card p-5">
+            <div className="space-y-1.5">
+              <h2 className="flex items-center gap-2 text-[1.15rem] font-semibold leading-[1.2] tracking-[-0.015em] text-foreground">
                 <BookOpenText className="h-5 w-5 text-primary" />
                 읽을 본문 선택
-              </CardTitle>
-              <CardDescription>
+              </h2>
+              <p className="text-sm leading-[1.45] text-muted-foreground">
                 현재 선택: {selectedBook?.kor} {selectedChapter}장
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-2">
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <Button variant="outline" className="w-full justify-between" onClick={() => setPickerOpen(true)}>
                 책/장 선택 열기
                 <ChevronRight className="h-4 w-4" />
@@ -111,17 +111,14 @@ export function ChapterReader(): React.JSX.Element {
               <Button className="w-full" onClick={() => setMode("reading")}>
                 {selectedBook?.kor} {selectedChapter}장 읽기 시작
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card className="border-border/80 bg-muted/35">
-            <CardContent className="space-y-2 p-6">
-              <p className="text-sm font-semibold text-foreground">읽기 흐름</p>
-              <p className="text-sm leading-6 text-muted-foreground">
-                낭독 중에는 불필요한 탐색 요소를 최소화하고, 읽은 어절만 실시간으로 강조합니다.
-              </p>
-            </CardContent>
-          </Card>
+          <section className="rounded-2xl border border-border/75 bg-background px-4 py-3">
+            <p className="text-sm leading-[1.45] text-muted-foreground">
+              낭독 중에는 읽기 흐름에 집중할 수 있도록 탐색 요소가 최소화됩니다.
+            </p>
+          </section>
         </div>
       </PageContainer>
 
@@ -152,7 +149,7 @@ export function ChapterReader(): React.JSX.Element {
                       title={`${book.kor} (${book.niv})`}
                       titleClassName={cn("text-sm font-semibold", isSelected ? "text-primary" : "text-foreground")}
                       className={cn(isSelected ? "border-primary/45 bg-primary/5" : undefined)}
-                      trailing={
+                      control={
                         <Button
                           type="button"
                           size="sm"
@@ -181,7 +178,7 @@ export function ChapterReader(): React.JSX.Element {
                     title={`${number}장`}
                     titleClassName={cn("text-sm font-semibold", number === selectedChapter ? "text-primary" : "text-foreground")}
                     className={cn(number === selectedChapter ? "border-primary/45 bg-primary/5" : undefined)}
-                    trailing={
+                    control={
                       <Button
                         type="button"
                         size="sm"
@@ -191,9 +188,7 @@ export function ChapterReader(): React.JSX.Element {
                         {number === selectedChapter ? "선택됨" : "선택"}
                       </Button>
                     }
-                  >
-                    {/* empty on purpose: content handled by title/trailing */}
-                  </BoardRow>
+                  />
                 ))}
               </div>
             </TabsContent>

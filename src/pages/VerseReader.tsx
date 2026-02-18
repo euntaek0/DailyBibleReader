@@ -95,7 +95,7 @@ export function VerseReader(): React.JSX.Element {
   if (isLoading || !verse) {
     return (
       <div className="flex h-full flex-col">
-        <TopBar title="오늘의 말씀" subtitle="불러오는 중" variant="page" showSubtitle />
+        <TopBar title="오늘의 말씀" subtitle="불러오는 중" variant="page" appearance="translucent" />
         <PageContainer withBottomInset>
           <div className="reader-column flex min-h-[52vh] items-center justify-center text-sm text-muted-foreground">
             오늘의 구절을 불러오고 있어요…
@@ -106,55 +106,61 @@ export function VerseReader(): React.JSX.Element {
   }
 
   return (
-    <div className="flex h-full flex-col">
-      <TopBar title="오늘의 말씀" subtitle={verse.reference} compact={isListening} variant="page" showSubtitle />
+    <div className="relative flex h-full flex-col">
+      <TopBar
+        title="오늘의 말씀"
+        subtitle={verse.reference}
+        compact={isListening}
+        variant="page"
+        appearance="translucent"
+      />
 
-      <PageContainer className={cn(isListening ? "pt-3" : "pt-4")}>
-        <div className="reader-column flex min-h-full flex-col">
-          <section className="flex flex-1 flex-col items-center justify-center px-2 text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-500/90">Daily Verse</p>
-            <h2 className={cn("mt-2 font-semibold tracking-[-0.02em] text-foreground", isListening ? "text-[1.4rem]" : "text-[1.55rem]")}>
-              {verse.reference}
-            </h2>
-
-            <ReaderText
-              text={verse.text}
-              matchedIndices={matchResult.matchedIndices}
-              dimUnmatched={isListening}
-              className={cn(
-                "mx-auto mt-5 max-w-[19rem] text-center",
-                isListening
-                  ? "text-[clamp(1.08rem,4.4vw,1.33rem)] leading-[1.52]"
-                  : "text-[clamp(1.12rem,4.6vw,1.38rem)] leading-[1.54]"
-              )}
-            />
-
-            <div className="mt-5 flex items-center justify-center">
-              <StatusBadge status={matchResult.status} />
-            </div>
-
-            {isListening && transcript ? (
-              <p className="mt-4 max-w-[19rem] text-[0.92rem] leading-[1.45] text-brand-700" aria-live="polite">
-                인식: “{transcript}”
-              </p>
-            ) : (
-              <p className="mt-4 max-w-[19rem] text-sm leading-[1.45] text-muted-foreground">
-                {isListening ? "읽는 중에는 일치한 어절이 바로 강조됩니다." : "낭독을 시작하면 읽은 어절이 색으로 표시됩니다."}
-              </p>
+      <PageContainer withBottomInset withMicDockInset className={cn(isListening ? "pt-2" : "pt-3")}>
+        <div className="reader-column flex min-h-full flex-col items-center justify-center pb-4 text-center">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-500/90">Daily Verse</p>
+          <h2
+            className={cn(
+              "mt-2 font-semibold tracking-[-0.02em] text-foreground",
+              isListening ? "text-[1.35rem]" : "text-[1.55rem]"
             )}
-          </section>
+          >
+            {verse.reference}
+          </h2>
 
-          <div className="sticky bottom-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom)+0.35rem)] z-10 pb-1 pt-4">
-            <MicControl
-              state={micState}
-              onToggle={toggleRecording}
-              onOpenSettingsGuide={() => toast.info("브라우저 주소창 왼쪽의 사이트 권한에서 마이크를 허용해 주세요.")}
-              helperText={helperText}
-              className="mx-auto w-full max-w-[18rem]"
-            />
+          <ReaderText
+            text={verse.text}
+            matchedIndices={matchResult.matchedIndices}
+            dimUnmatched={isListening}
+            className={cn(
+              "mx-auto mt-5 max-w-[20rem] text-center",
+              isListening
+                ? "text-[clamp(1.06rem,4.2vw,1.28rem)] leading-[1.48]"
+                : "text-[clamp(1.12rem,4.4vw,1.36rem)] leading-[1.5]"
+            )}
+          />
+
+          <div className="mt-4 flex items-center justify-center">
+            <StatusBadge status={matchResult.status} />
           </div>
+
+          <p className="mt-4 max-w-[20rem] text-sm leading-[1.4] text-muted-foreground">
+            {isListening ? "읽는 중에는 일치한 어절이 바로 강조됩니다." : "낭독을 시작하면 읽은 어절이 색으로 표시됩니다."}
+          </p>
         </div>
       </PageContainer>
+
+      <div className="mic-dock pointer-events-none absolute inset-x-0 z-30 px-4">
+        <div className="pointer-events-auto reader-column">
+          <MicControl
+            size="compact"
+            state={micState}
+            onToggle={toggleRecording}
+            onOpenSettingsGuide={() => toast.info("브라우저 주소창 왼쪽의 사이트 권한에서 마이크를 허용해 주세요.")}
+            helperText={helperText}
+            className="mx-auto w-full max-w-[18rem]"
+          />
+        </div>
+      </div>
     </div>
   );
 }

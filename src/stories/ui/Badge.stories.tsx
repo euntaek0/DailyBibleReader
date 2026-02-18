@@ -32,9 +32,9 @@ function ToneMatrix({ tone }: { tone: "solid" | "weak" }): React.JSX.Element {
   return (
     <div className="space-y-3">
       {SIZE_ROWS.map((row) => (
-        <div key={`${tone}-${row.size}`} className="grid grid-cols-[44px_1fr] items-center gap-4">
+        <div key={`${tone}-${row.size}`} className="grid grid-cols-[48px_1fr] items-center gap-4">
           <p className="text-[11px] font-medium text-muted-foreground">{row.label}</p>
-          <div className="grid grid-cols-6 gap-4">
+          <div className="grid grid-cols-6 gap-5">
             {COLUMNS.map((column) => (
               <Badge key={`${tone}-${row.size}-${column.label}`} variant={tone === "solid" ? column.solid : column.weak} size={row.size} className="justify-center">
                 배지
@@ -49,22 +49,24 @@ function ToneMatrix({ tone }: { tone: "solid" | "weak" }): React.JSX.Element {
 
 function BadgeMatrixStory(): React.JSX.Element {
   return (
-    <div className="space-y-4 p-4">
-      <div className="space-y-1">
+    <div className="space-y-5 p-6">
+      <div className="space-y-2">
         <h2 className="text-[1.35rem] font-semibold tracking-[-0.02em] text-foreground">Badge System v2</h2>
-        <p className="text-sm leading-6 text-muted-foreground">디자인 시스템 토큰(brand/neutral/signals) 기반 색상군 6종과 톤(Solid/Soft), 사이즈(S~XL) 매트릭스입니다.</p>
+        <p className="text-sm leading-[1.5] text-muted-foreground">
+          디자인 시스템 토큰(brand/neutral/signals) 기반 색상군 6종과 톤(Solid/Soft), 사이즈(S~XL) 매트릭스입니다.
+        </p>
       </div>
 
-      <Card className="border-border/80 bg-card shadow-1">
+      <Card className="border-border/80 bg-card">
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Color Matrix</CardTitle>
         </CardHeader>
         <CardContent className="pb-5 pt-2">
           <div className="overflow-x-auto pb-1">
-            <div className="min-w-[860px] space-y-5 rounded-2xl bg-neutral-50/70 p-4">
-              <div className="grid grid-cols-[44px_1fr] items-center gap-4 border-b border-border/60 pb-3">
+            <div className="min-w-[930px] space-y-5 rounded-2xl bg-neutral-50/70 p-5">
+              <div className="grid grid-cols-[48px_1fr] items-center gap-4 border-b border-border/60 pb-3">
                 <p className="text-[11px] font-medium text-muted-foreground">Size</p>
-                <div className="grid grid-cols-6 gap-4">
+                <div className="grid grid-cols-6 gap-5">
                   {COLUMNS.map((column) => (
                     <p key={`head-${column.label}`} className="text-center text-[11px] font-medium text-muted-foreground">
                       {column.label}
@@ -94,6 +96,9 @@ const meta = {
   title: "UI/Badge",
   component: Badge,
   tags: ["autodocs"],
+  parameters: {
+    frame: "wide",
+  },
   args: {
     variant: "read",
     size: "md",

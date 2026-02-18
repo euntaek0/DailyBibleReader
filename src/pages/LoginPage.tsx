@@ -8,6 +8,7 @@ import { PageContainer } from "../components/system/PageContainer.tsx";
 import { BoardRow } from "../components/ui/board-row.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Button } from "../components/ui/button.tsx";
+import { Switch } from "../components/ui/switch.tsx";
 
 export function LoginPage(): React.JSX.Element {
   const [identifier, setIdentifier] = useState("");
@@ -44,11 +45,11 @@ export function LoginPage(): React.JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar title="로그인" subtitle="계정으로 설정과 읽기 기록을 동기화하세요" variant="page" />
+      <TopBar title="로그인" subtitle="계정으로 설정과 읽기 기록을 동기화하세요" variant="page" appearance="translucent" />
 
       <PageContainer withBottomInset={false}>
-        <div className="reader-column space-y-5">
-          <Card className="border-border/80 bg-card">
+        <div className="reader-column space-y-4">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle>계정 로그인</CardTitle>
               <CardDescription>이메일 로그인 후 기기 간 읽기 상태를 연동할 수 있습니다.</CardDescription>
@@ -66,7 +67,7 @@ export function LoginPage(): React.JSX.Element {
                     value={identifier}
                     onChange={(event) => setIdentifier(event.target.value)}
                     placeholder="admin 또는 name@example.com"
-                    className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     required
                     disabled={isSubmitting}
                   />
@@ -81,7 +82,7 @@ export function LoginPage(): React.JSX.Element {
                     autoComplete="current-password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     required
                     disabled={isSubmitting}
                   />
@@ -90,12 +91,10 @@ export function LoginPage(): React.JSX.Element {
                 <BoardRow
                   surface="subtle"
                   title="로그인 상태 유지"
-                  trailing={
-                    <input
-                      type="checkbox"
+                  control={
+                    <Switch
                       checked={keepLoggedIn}
-                      onChange={(event) => setKeepLoggedIn(event.target.checked)}
-                      className="h-4 w-4 accent-primary"
+                      onCheckedChange={setKeepLoggedIn}
                       aria-label="로그인 상태 유지"
                       disabled={isSubmitting}
                     />
@@ -120,12 +119,10 @@ export function LoginPage(): React.JSX.Element {
             </CardContent>
           </Card>
 
-          <Card className="border-border/80 bg-muted/35">
-            <CardContent className="space-y-2 p-6">
-              <p className="text-sm font-semibold text-foreground">로그인 후 가능한 기능</p>
-              <p className="text-sm leading-6 text-muted-foreground">읽기 진행률 동기화, 개인 설정 백업, 계정 기반 알림 설정</p>
-            </CardContent>
-          </Card>
+          <section className="rounded-2xl border border-border/75 bg-background px-4 py-3">
+            <p className="text-sm font-semibold text-foreground">로그인 후 가능한 기능</p>
+            <p className="mt-1 text-sm leading-[1.45] text-muted-foreground">읽기 진행률 동기화, 개인 설정 백업, 계정 기반 알림 설정</p>
+          </section>
         </div>
       </PageContainer>
     </div>

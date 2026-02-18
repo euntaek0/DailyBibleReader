@@ -7,6 +7,7 @@ import { PageContainer } from "../components/system/PageContainer.tsx";
 import { BoardRow } from "../components/ui/board-row.tsx";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Button } from "../components/ui/button.tsx";
+import { Switch } from "../components/ui/switch.tsx";
 
 type FontScale = "small" | "normal" | "large";
 
@@ -39,11 +40,11 @@ export function SettingsPage(): React.JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar title="설정" subtitle="앱 설정과 개인정보를 관리하세요" variant="page" />
+      <TopBar title="설정" subtitle="앱 설정과 개인정보를 관리하세요" variant="page" appearance="translucent" />
 
       <PageContainer>
-        <div className="reader-column space-y-5">
-          <Card className="border-border/80 bg-card">
+        <div className="reader-column space-y-4">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -51,7 +52,7 @@ export function SettingsPage(): React.JSX.Element {
               </CardTitle>
               <CardDescription>읽기 환경과 알림 옵션을 조정할 수 있습니다.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               <BoardRow
                 surface="subtle"
                 collapsible
@@ -78,34 +79,18 @@ export function SettingsPage(): React.JSX.Element {
               <BoardRow
                 surface="subtle"
                 title="고대비 모드"
-                trailing={
-                  <input
-                    type="checkbox"
-                    checked={highContrast}
-                    onChange={(event) => setHighContrast(event.target.checked)}
-                    className="h-4 w-4 accent-primary"
-                    aria-label="고대비 모드"
-                  />
-                }
+                control={<Switch checked={highContrast} onCheckedChange={setHighContrast} aria-label="고대비 모드" />}
               />
 
               <BoardRow
                 surface="subtle"
                 title="매일 읽기 알림 받기"
-                trailing={
-                  <input
-                    type="checkbox"
-                    checked={dailyReminder}
-                    onChange={(event) => setDailyReminder(event.target.checked)}
-                    className="h-4 w-4 accent-primary"
-                    aria-label="매일 읽기 알림 받기"
-                  />
-                }
+                control={<Switch checked={dailyReminder} onCheckedChange={setDailyReminder} aria-label="매일 읽기 알림 받기" />}
               />
             </CardContent>
           </Card>
 
-          <Card className="border-border/80 bg-card">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UserRound className="h-4 w-4 text-primary" aria-hidden="true" />
@@ -122,7 +107,7 @@ export function SettingsPage(): React.JSX.Element {
                   id="display-name"
                   value={displayName}
                   onChange={(event) => setDisplayName(event.target.value)}
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
               <div className="space-y-2">
@@ -135,19 +120,17 @@ export function SettingsPage(): React.JSX.Element {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder="name@example.com"
-                  className="h-10 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
               <BoardRow
                 surface="subtle"
                 title="서비스 개선을 위한 사용 데이터 공유"
-                trailing={
-                  <input
-                    type="checkbox"
+                control={
+                  <Switch
                     checked={shareUsageData}
-                    onChange={(event) => setShareUsageData(event.target.checked)}
-                    className="h-4 w-4 accent-primary"
+                    onCheckedChange={setShareUsageData}
                     aria-label="서비스 개선을 위한 사용 데이터 공유"
                   />
                 }
@@ -162,7 +145,7 @@ export function SettingsPage(): React.JSX.Element {
                 description="비밀번호 변경과 로그인 기기 관리"
                 defaultOpen={false}
               >
-                <p className="text-sm leading-6 text-muted-foreground">비밀번호 변경과 로그인 기기 관리는 로그인 페이지에서 진행할 수 있습니다.</p>
+                <p className="text-sm leading-[1.45] text-muted-foreground">비밀번호 변경과 로그인 기기 관리는 로그인 페이지에서 진행할 수 있습니다.</p>
               </BoardRow>
             </CardContent>
           </Card>

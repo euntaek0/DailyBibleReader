@@ -12,6 +12,9 @@ const meta = {
   title: "Components/ReaderView",
   component: ReaderView,
   tags: ["autodocs"],
+  parameters: {
+    frame: "mobile",
+  },
   args: {
     bookKey: "ge",
     chapter: 1,

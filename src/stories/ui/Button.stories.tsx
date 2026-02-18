@@ -50,10 +50,10 @@ const STATE_ROWS: StateRow[] = [
   { disabled: true, stateLabel: "Loading", loading: true, pressed: false },
 ];
 
-const LABEL_COLUMN_CLASS = "w-[88px] whitespace-nowrap text-[12px] font-medium";
-const SIZE_GRID_CLASS = "grid grid-cols-4 gap-4";
-const MATRIX_LAYOUT_CLASS = "grid grid-cols-[88px_88px_76px_1fr] items-center gap-5";
-const MATRIX_MIN_WIDTH_CLASS = "min-w-[960px]";
+const LABEL_COLUMN_CLASS = "w-[96px] whitespace-nowrap text-[12px] font-medium";
+const SIZE_GRID_CLASS = "grid grid-cols-4 gap-5";
+const MATRIX_LAYOUT_CLASS = "grid grid-cols-[96px_96px_84px_1fr] items-center gap-6";
+const MATRIX_MIN_WIDTH_CLASS = "min-w-[1040px]";
 
 function MatrixRow({
   row,
@@ -140,10 +140,13 @@ function MatrixBlock({ group }: { group: ColorGroup }): React.JSX.Element {
 
 function ButtonMatrixStory(): React.JSX.Element {
   return (
-    <div className="space-y-4 p-4">
-      <div className="space-y-1">
+    <div className="space-y-5 p-6">
+      <div className="space-y-2">
         <h2 className="text-[1.35rem] font-semibold tracking-[-0.02em] text-foreground">Button System v2</h2>
-        <p className="text-sm leading-6 text-muted-foreground">색상군(Primary/Secondary/Danger/Primary Inverse), Fill/Weak, 상태(Default/Pressed/Disabled/Loading), 사이즈(S~XL)를 한 번에 검증할 수 있는 매트릭스입니다.</p>
+        <p className="text-sm leading-[1.5] text-muted-foreground">
+          색상군(Primary/Secondary/Danger/Primary Inverse), Fill/Weak, 상태(Default/Pressed/Disabled/Loading), 사이즈(S~XL)를
+          한 번에 검증할 수 있는 매트릭스입니다.
+        </p>
       </div>
 
       <div className="grid gap-4">
@@ -159,6 +162,9 @@ const meta = {
   title: "UI/Button",
   component: Button,
   tags: ["autodocs"],
+  parameters: {
+    frame: "wide",
+  },
   args: {
     children: "버튼",
     variant: "primary",

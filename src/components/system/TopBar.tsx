@@ -13,6 +13,7 @@ interface TopBarProps {
   compact?: boolean;
   variant?: "page" | "section";
   showSubtitle?: boolean;
+  appearance?: "solid" | "translucent";
 }
 
 export function TopBar({
@@ -23,50 +24,53 @@ export function TopBar({
   rightAction,
   compact = false,
   variant = "page",
-  showSubtitle = false,
+  showSubtitle,
+  appearance = "translucent",
 }: TopBarProps): React.JSX.Element {
   const isPage = variant === "page";
+  const resolvedShowSubtitle = showSubtitle ?? Boolean(subtitle);
+
   const titleClass = compact
-    ? "text-[1.02rem] leading-[1.2] tracking-[-0.012em]"
+    ? "text-[1rem] leading-[1.2] tracking-[-0.012em]"
     : isPage
-      ? "text-[1.15rem] leading-[1.2] tracking-[-0.014em]"
-      : "text-[1.08rem] leading-[1.2] tracking-[-0.012em]";
-  const subtitleClass = "text-[0.78rem] leading-[1.35] text-muted-foreground";
+      ? "text-[1.14rem] leading-[1.2] tracking-[-0.014em]"
+      : "text-[1.07rem] leading-[1.2] tracking-[-0.012em]";
+
+  const subtitleClass = "text-[0.75rem] leading-[1.35] text-muted-foreground";
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 border-b border-border/70 bg-background/96 supports-[backdrop-filter]:bg-background/92",
-        compact
-          ? "pt-[calc(env(safe-area-inset-top)+0.25rem)]"
-          : "pt-[calc(env(safe-area-inset-top)+0.4rem)]",
-        showSubtitle && subtitle ? "pb-2" : "pb-1.5"
+        "sticky top-0 z-30 border-b border-border/60",
+        appearance === "translucent" ? "glass-surface" : "bg-background",
+        compact ? "pt-[calc(env(safe-area-inset-top)+0.2rem)]" : "pt-[calc(env(safe-area-inset-top)+0.35rem)]",
+        resolvedShowSubtitle && subtitle ? "pb-2" : "pb-1"
       )}
     >
       <div className="reader-column page-gutter">
-        <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-start">
+        <div className="grid grid-cols-[2.75rem_1fr_2.75rem] items-center">
+          <div className="flex h-11 w-11 items-center justify-start">
             {onBack ? (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onBack}
                 aria-label="뒤로 가기"
-                className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-5 w-5" />
               </Button>
             ) : leftAction ? (
               leftAction
             ) : null}
           </div>
 
-          <div className="min-w-0 text-center">
+          <div className="min-w-0 px-2 text-center">
             <h1 className={cn("truncate font-semibold text-foreground", titleClass)}>{title}</h1>
-            {showSubtitle && subtitle ? <p className={cn("mt-0.5 line-clamp-1", subtitleClass)}>{subtitle}</p> : null}
+            {resolvedShowSubtitle && subtitle ? <p className={cn("mt-0.5 line-clamp-1", subtitleClass)}>{subtitle}</p> : null}
           </div>
 
-          <div className="flex h-10 w-10 items-center justify-end">{rightAction ?? null}</div>
+          <div className="flex h-11 w-11 items-center justify-end">{rightAction ?? null}</div>
         </div>
       </div>
     </header>

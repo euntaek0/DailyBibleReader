@@ -2,6 +2,8 @@ import type { Preview } from "@storybook/react-vite";
 
 import "../src/styles/globals.css";
 
+type StoryFrame = "mobile" | "wide" | "full";
+
 const preview: Preview = {
   parameters: {
     layout: "fullscreen",
@@ -14,23 +16,27 @@ const preview: Preview = {
     backgrounds: {
       default: "app",
       values: [
-        { name: "app", value: "hsl(210 33% 98%)" },
-        { name: "dark", value: "hsl(224 39% 10%)" },
+        { name: "app", value: "hsl(220 20% 98%)" },
+        { name: "dark", value: "hsl(220 20% 9%)" },
       ],
     },
+    frame: "mobile",
   },
   decorators: [
     (Story, context) => {
+      const explicitFrame = context.parameters.frame as StoryFrame | undefined;
       const isFoundationStory = context.title?.startsWith("Foundation/");
       const isWideUiStory = context.title === "UI/Button" || context.title === "UI/Badge" || context.title === "UI/Board Row";
-      const isWideStory = isFoundationStory || isWideUiStory;
-      const maxWidth = isWideStory ? "1320px" : "480px";
+      const frame: StoryFrame = explicitFrame ?? (isFoundationStory || isWideUiStory ? "wide" : "mobile");
+
+      const maxWidth = frame === "wide" ? "1400px" : frame === "full" ? "100%" : "460px";
+      const outerPadding = frame === "wide" ? "24px" : "16px";
 
       return (
         <div
           style={{
             minHeight: "100vh",
-            padding: "16px",
+            padding: outerPadding,
             display: "flex",
             justifyContent: "center",
             alignItems: "flex-start",
@@ -41,14 +47,15 @@ const preview: Preview = {
             style={{
               width: "100%",
               maxWidth,
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "16px",
-              overflowX: isWideStory ? "auto" : "hidden",
+              border: frame === "mobile" ? "1px solid hsl(var(--border))" : "none",
+              borderRadius: frame === "mobile" ? "20px" : "0px",
+              overflowX: frame === "wide" ? "auto" : "hidden",
               overflowY: "auto",
               maxHeight: "calc(100dvh - 32px)",
               WebkitOverflowScrolling: "touch",
               overscrollBehavior: "contain",
               background: "hsl(var(--background))",
+              boxShadow: frame === "mobile" ? "0 10px 24px rgba(15, 23, 42, 0.1)" : "none",
             }}
           >
             <Story />

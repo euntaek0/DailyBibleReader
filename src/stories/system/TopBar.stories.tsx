@@ -8,6 +8,9 @@ const meta = {
   title: "System/TopBar",
   component: TopBar,
   tags: ["autodocs"],
+  parameters: {
+    frame: "mobile",
+  },
   args: {
     title: "연간 통독",
     subtitle: "날짜별 분량을 선택하고 바로 읽기",
@@ -23,13 +26,13 @@ export const Page: Story = {
     title: "Home",
     subtitle: "날짜별 분량을 선택하고 바로 읽기",
     leftAction: (
-      <Button variant="ghost" size="icon" className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-        <Menu className="h-4 w-4" />
+      <Button variant="ghost" size="icon" className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+        <Menu className="h-5 w-5" />
       </Button>
     ),
     rightAction: (
-      <Button variant="ghost" size="icon" className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-        <PencilLine className="h-4 w-4" />
+      <Button variant="ghost" size="icon" className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+        <PencilLine className="h-5 w-5" />
       </Button>
     ),
   },
@@ -42,8 +45,8 @@ export const Section: Story = {
     subtitle: "3/26절 완료",
     onBack: () => undefined,
     rightAction: (
-      <Button variant="ghost" size="icon" className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-        <PencilLine className="h-4 w-4" />
+      <Button variant="ghost" size="icon" className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+        <PencilLine className="h-5 w-5" />
       </Button>
     ),
   },
@@ -55,6 +58,7 @@ export const Compact: Story = {
     variant: "section",
     title: "오늘의 말씀",
     subtitle: "신명기 24:1",
+    appearance: "solid",
   },
 };
 
@@ -65,8 +69,8 @@ export const LongContext: Story = {
     subtitle: "책과 장을 선택한 뒤 읽기를 시작하면 읽은 구절이 순서대로 강조됩니다.",
     showSubtitle: true,
     rightAction: (
-      <Button variant="ghost" size="icon" className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-        <PencilLine className="h-4 w-4" />
+      <Button variant="ghost" size="icon" className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+        <PencilLine className="h-5 w-5" />
       </Button>
     ),
   },

@@ -11,7 +11,6 @@ import { PageContainer } from "../components/system/PageContainer.tsx";
 import { BoardRow } from "../components/ui/board-row.tsx";
 import { Button } from "../components/ui/button.tsx";
 import { Badge } from "../components/ui/badge.tsx";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card.tsx";
 import { Progress } from "../components/ui/progress.tsx";
 import { cn } from "../lib/utils.ts";
 
@@ -152,107 +151,103 @@ export function YearPlanPage(): React.JSX.Element {
 
   return (
     <div className="flex h-full flex-col">
-      <TopBar title="연간 통독" subtitle="날짜별 분량을 선택하고 바로 읽기" variant="page" />
+      <TopBar title="연간 통독" subtitle="날짜별 분량을 선택하고 바로 읽기" variant="page" appearance="translucent" />
 
       <PageContainer>
-        <div className="reader-column space-y-6">
-          <Card className="border-border/80 bg-card">
-            <CardHeader className="space-y-3 pb-2">
-              <CardTitle className="text-[clamp(1.8rem,8vw,2.3rem)] leading-[1.05] tracking-[-0.02em]">Day {todayPlan?.day ?? "-"}</CardTitle>
-              <CardDescription>날짜를 선택하면 해당 분량으로 이동합니다.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-2">
-              <div className="flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  aria-label="이전 날짜"
-                  onClick={() => {
-                    const previous = new Date(selectedDate);
-                    previous.setDate(previous.getDate() - 1);
-                    setSelectedDate(previous);
-                  }}
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
+        <div className="reader-column space-y-4">
+          <section className="space-y-5 rounded-2xl border border-border/75 bg-card p-5">
+            <div className="space-y-1">
+              <h2 className="text-[1.4rem] font-semibold leading-[1.15] tracking-[-0.02em] text-foreground">Day {todayPlan?.day ?? "-"}</h2>
+              <p className="text-sm leading-[1.45] text-muted-foreground">날짜를 선택하면 해당 분량으로 이동합니다.</p>
+            </div>
 
-                <input
-                  type="date"
-                  value={formatDateInput(selectedDate)}
-                  onChange={(event) => {
-                    if (event.target.value) {
-                      setSelectedDate(parseDateInput(event.target.value));
-                    }
-                  }}
-                  className="h-10 flex-1 rounded-lg border border-input bg-background px-3 text-sm font-medium tracking-[-0.01em] outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label="날짜 선택"
-                />
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="이전 날짜"
+                onClick={() => {
+                  const previous = new Date(selectedDate);
+                  previous.setDate(previous.getDate() - 1);
+                  setSelectedDate(previous);
+                }}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  aria-label="다음 날짜"
-                  onClick={() => {
-                    const next = new Date(selectedDate);
-                    next.setDate(next.getDate() + 1);
-                    setSelectedDate(next);
-                  }}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+              <input
+                type="date"
+                value={formatDateInput(selectedDate)}
+                onChange={(event) => {
+                  if (event.target.value) {
+                    setSelectedDate(parseDateInput(event.target.value));
+                  }
+                }}
+                className="h-11 flex-1 rounded-xl border border-input bg-background px-3 text-sm font-medium tracking-[-0.01em] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="날짜 선택"
+              />
 
-              <Progress value={completedPlanRatio} label="오늘 분량 진행률" />
-            </CardContent>
-          </Card>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                aria-label="다음 날짜"
+                onClick={() => {
+                  const next = new Date(selectedDate);
+                  next.setDate(next.getDate() + 1);
+                  setSelectedDate(next);
+                }}
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
 
-          <section className="space-y-4" aria-label="오늘 읽을 장 목록">
+            <Progress value={completedPlanRatio} label="오늘 분량 진행률" />
+          </section>
+
+          <section className="space-y-2" aria-label="오늘 읽을 장 목록">
             {isPlanLoading ? (
-              <Card className="border-border/80 bg-card">
-                <CardContent className="p-5 text-sm text-muted-foreground">통독 계획을 불러오는 중이에요…</CardContent>
-              </Card>
+              <div className="rounded-2xl border border-border/75 bg-card px-4 py-6 text-sm text-muted-foreground">통독 계획을 불러오는 중이에요…</div>
             ) : null}
 
-            {!isPlanLoading && todayPlan?.chapters.map((chapterInfo, index) => {
-              const book = bibleBookMap[chapterInfo.book as keyof typeof bibleBookMap];
-              const isCompleted = index < currentChapterIndex;
-              const isCurrent = index === currentChapterIndex;
+            {!isPlanLoading &&
+              todayPlan?.chapters.map((chapterInfo, index) => {
+                const book = bibleBookMap[chapterInfo.book as keyof typeof bibleBookMap];
+                const isCompleted = index < currentChapterIndex;
+                const isCurrent = index === currentChapterIndex;
 
-              return (
-                <BoardRow
-                  key={`${chapterInfo.book}-${chapterInfo.chapter}`}
-                  className={cn("transition-colors", isCurrent ? "border-primary/45" : "border-border/80")}
-                  title={`${book?.kor} ${chapterInfo.chapter}장`}
-                  titleClassName="text-[1.4rem] font-semibold leading-[1.1] tracking-[-0.02em] text-foreground"
-                  description={
-                    <div className="flex flex-wrap items-center gap-2">
-                      {isCurrent ? <Badge variant="default">현재 읽을 순서</Badge> : null}
-                      {isCompleted ? <Badge variant="read">완료</Badge> : null}
-                      {!isCurrent && !isCompleted ? <Badge variant="notread">대기</Badge> : null}
-                    </div>
-                  }
-                  trailing={
-                    <Button
-                      size="md"
-                      variant={isCurrent ? "primary" : "secondary"}
-                      onClick={() => {
-                        setCurrentChapterIndex(index);
-                        setIsReadingMode(true);
-                      }}
-                    >
-                      읽기
-                    </Button>
-                  }
-                />
-              );
-            })}
+                return (
+                  <BoardRow
+                    key={`${chapterInfo.book}-${chapterInfo.chapter}`}
+                    className={cn("transition-colors", isCurrent ? "border-primary/45" : "border-border/80")}
+                    title={`${book?.kor} ${chapterInfo.chapter}장`}
+                    titleClassName="text-base font-semibold leading-[1.25] tracking-[-0.015em] text-foreground"
+                    description={
+                      <div className="flex flex-wrap items-center gap-2">
+                        {isCurrent ? <Badge variant="default">현재 읽을 순서</Badge> : null}
+                        {isCompleted ? <Badge variant="read">완료</Badge> : null}
+                        {!isCurrent && !isCompleted ? <Badge variant="notread">대기</Badge> : null}
+                      </div>
+                    }
+                    control={
+                      <Button
+                        size="md"
+                        variant={isCurrent ? "primary" : "secondary"}
+                        onClick={() => {
+                          setCurrentChapterIndex(index);
+                          setIsReadingMode(true);
+                        }}
+                      >
+                        읽기
+                      </Button>
+                    }
+                  />
+                );
+              })}
 
             {!isPlanLoading && todayPlan && todayPlan.chapters.length === 0 ? (
-              <Card className="border-border/80 bg-card">
-                <CardContent className="p-5 text-sm text-muted-foreground">해당 날짜의 통독 분량이 없습니다.</CardContent>
-              </Card>
+              <div className="rounded-2xl border border-border/75 bg-card px-4 py-6 text-sm text-muted-foreground">해당 날짜의 통독 분량이 없습니다.</div>
             ) : null}
           </section>
         </div>

@@ -6,9 +6,13 @@ const meta = {
   title: "System/MicControl",
   component: MicControl,
   tags: ["autodocs"],
+  parameters: {
+    frame: "mobile",
+  },
   args: {
     state: "idle",
     helperText: "마이크를 눌러 낭독을 시작하세요.",
+    size: "compact",
   },
 } satisfies Meta<typeof MicControl>;
 
@@ -24,6 +28,13 @@ export const Idle: Story = {
 export const Listening: Story = {
   args: {
     state: "listening",
+  },
+};
+
+export const RegularSize: Story = {
+  args: {
+    size: "regular",
+    state: "idle",
   },
 };
 

@@ -7,7 +7,7 @@ function BoardRowShowcase(): React.JSX.Element {
     <div className="space-y-6 p-6">
       <div className="space-y-2">
         <h2 className="text-[clamp(2.4rem,6vw,3.5rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-foreground">Board Row</h2>
-        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+        <p className="max-w-2xl text-sm leading-[1.5] text-muted-foreground">
           항목을 접거나 펼칠 수 있는 리스트 형태 컨테이너 컴포넌트입니다. 맥락을 벗어나지 않고 상세 내용을 빠르게 확인해야 할 때 사용합니다.
         </p>
       </div>
@@ -24,7 +24,7 @@ function BoardRowShowcase(): React.JSX.Element {
                 collapsible
                 defaultOpen={false}
               >
-                <p className="text-sm leading-6 text-muted-foreground">답변은 텍스트 필드에 문구를 바로 입력하거나, 직접 제작한 프레임에 연결해서 커스텀할 수 있어요.</p>
+                <p className="text-sm leading-[1.5] text-muted-foreground">답변은 텍스트 필드에 문구를 바로 입력하거나, 직접 제작한 프레임에 연결해서 커스텀할 수 있어요.</p>
               </BoardRow>
               <p className="text-center text-xs text-muted-foreground">Collapsed</p>
             </div>
@@ -36,7 +36,7 @@ function BoardRowShowcase(): React.JSX.Element {
                 collapsible
                 defaultOpen
               >
-                <div className="space-y-2 text-sm leading-6 text-muted-foreground">
+                <div className="space-y-2 text-sm leading-[1.5] text-muted-foreground">
                   <p>답변은 텍스트 필드에 문구를 바로 입력하거나, 직접 제작한 프레임에 연결해서 커스텀할 수 있어요.</p>
                   <ul className="list-disc pl-5">
                     <li>불렛과 숫자 리스트도 쓸 수 있어요.</li>
@@ -79,6 +79,9 @@ const meta = {
   title: "UI/Board Row",
   component: BoardRow,
   tags: ["autodocs"],
+  parameters: {
+    frame: "wide",
+  },
   args: {
     title: "질문을 적어주세요.",
     leading: <span className="text-sm font-bold">Q</span>,

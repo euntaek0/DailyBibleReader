@@ -5,14 +5,13 @@ import { bibleBookMap } from "../constants/bible.ts";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition.ts";
 import { calculateScore, type MatchResult } from "../utils/textMatcher.ts";
 import { Button } from "./ui/button.tsx";
-import { Card, CardContent } from "./ui/card.tsx";
-import { Progress } from "./ui/progress.tsx";
 import { TopBar } from "./system/TopBar.tsx";
 import { PageContainer } from "./system/PageContainer.tsx";
 import { ReaderText } from "./system/ReaderText.tsx";
 import { MicControl, type MicControlState } from "./system/MicControl.tsx";
 import { ChapterCompleteDialog } from "./system/ChapterCompleteDialog.tsx";
 import { StatusBadge } from "./system/StatusBadge.tsx";
+import { Progress } from "./ui/progress.tsx";
 import { cn } from "../lib/utils.ts";
 
 export interface ChapterVerse {
@@ -184,7 +183,7 @@ export function ReaderView({
   if (isLoading) {
     return (
       <div className="flex h-full flex-col">
-        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="본문을 불러오는 중" variant="section" />
+        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="본문을 불러오는 중" variant="section" appearance="translucent" />
         <PageContainer withBottomInset>
           <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/75 bg-card text-sm text-muted-foreground">
             본문을 불러오고 있어요…
@@ -197,17 +196,13 @@ export function ReaderView({
   if (error) {
     return (
       <div className="flex h-full flex-col">
-        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="불러오기 실패" variant="section" />
+        <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="불러오기 실패" variant="section" appearance="translucent" />
         <PageContainer withBottomInset>
-          <div className="reader-column">
-            <Card className="border-destructive/30 bg-destructive/5">
-              <CardContent className="space-y-4 p-5">
-                <p className="text-sm text-foreground">{error}</p>
-                <Button variant="outline" onClick={onBack}>
-                  선택 화면으로 돌아가기
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="reader-column space-y-4 rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
+            <p className="text-sm text-foreground">{error}</p>
+            <Button variant="outline" onClick={onBack}>
+              선택 화면으로 돌아가기
+            </Button>
           </div>
         </PageContainer>
       </div>
@@ -215,46 +210,45 @@ export function ReaderView({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       <TopBar
         title={`${bookName} ${chapter}장`}
         subtitle={`${completedCount}/${verses.length}절 완료`}
         onBack={onBack}
         compact={isListening}
         variant="section"
+        appearance="translucent"
         rightAction={
           onNextChapter ? (
             <Button
               variant="ghost"
               size="icon"
               onClick={onNextChapter}
-              className="tap-target h-10 w-10 rounded-lg text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+              className="tap-target h-11 w-11 rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               aria-label="다음 장"
             >
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-5 w-5" />
             </Button>
           ) : null
         }
       />
 
-      <PageContainer className={cn(isListening ? "pt-3" : "pt-6")}>
-        <div ref={scrollRef} className="reader-column space-y-6">
-          <Card className={cn("border-border/80 bg-card/96", isListening ? "shadow-2" : undefined)}>
-            <CardContent className={cn("space-y-4", isListening ? "p-4" : "p-5")}>
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold text-foreground">장 진행률</p>
-                {currentMatchResult ? <StatusBadge status={currentMatchResult.status} score={currentMatchResult.score} /> : null}
-              </div>
-              <Progress value={progressValue} />
-              {isListening && transcript ? (
-                <p className="line-clamp-2 text-sm leading-6 text-muted-foreground" aria-live="polite">
-                  인식: “{transcript}”
-                </p>
-              ) : null}
-            </CardContent>
-          </Card>
+      <PageContainer withBottomInset withMicDockInset className={cn(isListening ? "pt-2" : "pt-3")}>
+        <div ref={scrollRef} className="reader-column space-y-4">
+          <section className="space-y-3 rounded-2xl border border-border/75 bg-card p-4" aria-label="장 진행률">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-foreground">장 진행률</p>
+              {currentMatchResult ? <StatusBadge status={currentMatchResult.status} score={currentMatchResult.score} /> : null}
+            </div>
+            <Progress value={progressValue} />
+            {isListening && transcript ? (
+              <p className="line-clamp-1 text-sm leading-[1.4] text-muted-foreground" aria-live="polite">
+                인식: “{transcript}”
+              </p>
+            ) : null}
+          </section>
 
-          <section className="space-y-4" aria-label="성경 본문">
+          <section className="space-y-3" aria-label="성경 본문">
             {verses.map((verse, index) => {
               const isActive = index === activeVerseIndex;
               const isCompleted = Boolean(completedVerses[index]);
@@ -264,10 +258,10 @@ export function ReaderView({
                   key={verse.index}
                   id={`verse-${index}`}
                   className={cn(
-                    "rounded-xl border p-5 transition-all duration-base ease-standard",
-                    isActive && "reader-surface shadow-2",
-                    isCompleted && "border-status-read/30 bg-status-read/5",
-                    !isActive && !isCompleted && "border-border/80 bg-card",
+                    "rounded-2xl border p-4 transition-all duration-base ease-standard",
+                    isActive && "border-primary/45 bg-brand-100/45 shadow-1",
+                    isCompleted && "border-status-read/30 bg-status-read/8",
+                    !isActive && !isCompleted && "border-border/75 bg-card",
                     isListening && !isActive && !isCompleted && "opacity-70"
                   )}
                 >
@@ -284,22 +278,26 @@ export function ReaderView({
               );
             })}
           </section>
-
-          <div className="sticky bottom-3 z-10 rounded-xl border border-border/80 bg-background/92 p-4 shadow-2 backdrop-blur">
-            <MicControl
-              state={micState}
-              onToggle={handleToggleMic}
-              helperText={
-                micState === "idle"
-                  ? "마이크를 눌러 이 장 읽기를 시작하세요."
-                  : micState === "denied"
-                    ? "브라우저 권한 설정에서 마이크를 허용해 주세요."
-                    : undefined
-              }
-            />
-          </div>
         </div>
       </PageContainer>
+
+      <div className="mic-dock pointer-events-none absolute inset-x-0 z-30 px-4">
+        <div className="pointer-events-auto reader-column">
+          <MicControl
+            size="compact"
+            state={micState}
+            onToggle={handleToggleMic}
+            helperText={
+              micState === "idle"
+                ? "마이크를 눌러 이 장 읽기를 시작하세요."
+                : micState === "denied"
+                  ? "브라우저 권한 설정에서 마이크를 허용해 주세요."
+                  : undefined
+            }
+            className="mx-auto w-full max-w-[18rem]"
+          />
+        </div>
+      </div>
 
       <ChapterCompleteDialog
         open={showCompletionModal}

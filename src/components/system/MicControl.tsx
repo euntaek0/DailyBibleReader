@@ -12,19 +12,27 @@ interface MicControlProps {
   onOpenSettingsGuide?: () => void;
   className?: string;
   helperText?: string;
+  size?: "compact" | "regular";
 }
 
-export function MicControl({ state, onToggle, onOpenSettingsGuide, className, helperText }: MicControlProps): React.JSX.Element {
+export function MicControl({
+  state,
+  onToggle,
+  onOpenSettingsGuide,
+  className,
+  helperText,
+  size = "compact",
+}: MicControlProps): React.JSX.Element {
   if (state === "denied" || state === "unsupported") {
     return (
-      <Card className={cn("border-border/80 bg-card", className)}>
+      <Card className={cn("bg-card", className)}>
         <CardContent className="flex items-start gap-3 p-4">
           <ShieldAlert className="mt-0.5 h-5 w-5 text-signals-warning" aria-hidden="true" />
           <div className="flex-1 space-y-2">
             <p className="text-sm font-semibold text-foreground">
               {state === "denied" ? "마이크 권한이 꺼져 있어요" : "현재 브라우저에서 음성 인식을 지원하지 않아요"}
             </p>
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm leading-[1.45] text-muted-foreground">
               {helperText ??
                 (state === "denied"
                   ? "브라우저 설정에서 마이크 권한을 허용하면 바로 낭독을 시작할 수 있어요."
@@ -41,28 +49,40 @@ export function MicControl({ state, onToggle, onOpenSettingsGuide, className, he
     );
   }
 
+  const isCompact = size === "compact";
+  const buttonSizeClass = isCompact ? "h-[58px] w-[58px]" : "h-[72px] w-[72px]";
+  const iconSizeClass = isCompact ? "h-[18px] w-[18px]" : "h-[22px] w-[22px]";
+  const stopIconClass = isCompact ? "h-[12px] w-[12px]" : "h-[14px] w-[14px]";
+  const idleRingClass = isCompact
+    ? "shadow-[0_0_0_7px_hsl(var(--primary)/0.14),0_10px_24px_-14px_hsl(var(--primary)/0.48)]"
+    : "shadow-[0_0_0_9px_hsl(var(--primary)/0.14),0_10px_24px_-14px_hsl(var(--primary)/0.48)]";
+  const listeningRingClass = isCompact
+    ? "shadow-[0_0_0_7px_hsl(var(--signal-success)/0.14),0_10px_24px_-14px_hsl(var(--signal-success)/0.52)]"
+    : "shadow-[0_0_0_9px_hsl(var(--signal-success)/0.14),0_10px_24px_-14px_hsl(var(--signal-success)/0.52)]";
+
   return (
-    <div className={cn("flex flex-col items-center gap-3", className)}>
+    <div className={cn("flex flex-col items-center gap-2", className)}>
       <Button
         size="icon"
         className={cn(
-          "relative h-[70px] w-[70px] rounded-full",
+          "relative rounded-full",
+          buttonSizeClass,
           state === "listening"
-            ? "bg-signals-success text-white shadow-[0_0_0_8px_hsl(var(--signal-success)/0.14),0_10px_24px_-12px_hsl(var(--signal-success)/0.52)] hover:brightness-[0.95]"
-            : "bg-brand-500 text-white shadow-[0_0_0_8px_hsl(var(--primary)/0.14),0_10px_24px_-12px_hsl(var(--primary)/0.48)] hover:bg-brand-400"
+            ? cn("bg-signals-success text-white hover:brightness-[0.95]", listeningRingClass)
+            : cn("bg-brand-500 text-white hover:bg-brand-400", idleRingClass)
         )}
         onClick={onToggle}
         aria-label={state === "listening" ? "낭독 중지" : "낭독 시작"}
         aria-pressed={state === "listening"}
       >
-        {state === "listening" ? <Square className="h-3.5 w-3.5" /> : <Mic className="h-5 w-5" />}
+        {state === "listening" ? <Square className={stopIconClass} /> : <Mic className={iconSizeClass} />}
         {state === "listening" ? (
           <span className="pointer-events-none absolute inset-0 -z-10 rounded-full border border-signals-success/40 animate-mic-pulse" aria-hidden="true" />
         ) : null}
       </Button>
       <div
         className={cn(
-          "text-center text-[0.92rem] font-medium leading-[1.45]",
+          "text-center text-[0.88rem] font-medium leading-[1.4]",
           state === "listening" ? "text-signals-success" : "text-muted-foreground"
         )}
         aria-live="polite"

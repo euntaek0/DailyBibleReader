@@ -4,37 +4,37 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/utils.ts";
 
 const badgeVariants = cva(
-  "inline-flex select-none items-center justify-center rounded-full border font-semibold leading-none tracking-[-0.01em] whitespace-nowrap transition-colors",
+  "inline-flex select-none items-center justify-center rounded-full font-semibold leading-none tracking-[-0.01em] whitespace-nowrap transition-colors",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-brand-500 text-white",
-        secondary: "border-transparent bg-neutral-700 text-white",
-        outline: "border-border text-muted-foreground",
+        default: "bg-brand-500 text-white",
+        secondary: "bg-neutral-700 text-white",
+        outline: "border border-border text-muted-foreground",
 
-        primary: "border-transparent bg-brand-500 text-white",
-        neutral: "border-transparent bg-neutral-700 text-white",
-        signal: "border-transparent bg-signals-default text-white",
-        warning: "border-transparent bg-signals-warning text-white",
-        danger: "border-transparent bg-signals-error text-white",
-        success: "border-transparent bg-signals-success text-white",
+        primary: "bg-brand-500 text-white",
+        neutral: "bg-neutral-700 text-white",
+        signal: "bg-signals-default text-white",
+        warning: "bg-signals-warning text-white",
+        danger: "bg-signals-error text-white",
+        success: "bg-signals-success text-white",
 
-        primaryWeak: "border-transparent bg-brand-100 text-brand-500",
-        neutralWeak: "border-transparent bg-neutral-100 text-neutral-700",
-        signalWeak: "border-transparent bg-signals-default-light text-signals-default",
-        warningWeak: "border-transparent bg-signals-warning-light text-signals-warning",
-        dangerWeak: "border-transparent bg-signals-error-light text-signals-error",
-        successWeak: "border-transparent bg-signals-success-light text-signals-success",
+        primaryWeak: "bg-brand-100 text-brand-700",
+        neutralWeak: "bg-neutral-100 text-neutral-700",
+        signalWeak: "bg-signals-default-light text-signals-default",
+        warningWeak: "bg-signals-warning-light text-signals-warning",
+        dangerWeak: "bg-signals-error-light text-signals-error",
+        successWeak: "bg-signals-success-light text-signals-success",
 
-        read: "border-transparent bg-signals-success-light text-signals-success",
-        partial: "border-transparent bg-signals-warning-light text-signals-warning",
-        notread: "border-transparent bg-neutral-100 text-neutral-700",
+        read: "bg-signals-success-light text-signals-success",
+        partial: "bg-signals-warning-light text-signals-warning",
+        notread: "bg-neutral-100 text-neutral-700",
       },
       size: {
-        sm: "h-7 px-2.5 text-[11px]",
-        md: "h-8 px-3 text-xs",
-        lg: "h-9 px-3.5 text-[13px]",
-        xl: "h-10 px-4 text-sm",
+        sm: "h-6 px-2.5 text-[11px]",
+        md: "h-7 px-3 text-[12px]",
+        lg: "h-8 px-3.5 text-[13px]",
+        xl: "h-9 px-4 text-[14px]",
       },
     },
     defaultVariants: {
