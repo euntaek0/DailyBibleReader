@@ -1,35 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+import { AppShell } from "./components/system/AppShell.tsx";
+import { VerseReader } from "./pages/VerseReader.tsx";
+import { ChapterReader } from "./pages/ChapterReader.tsx";
+import { YearPlanPage } from "./pages/YearPlanPage.tsx";
+import { SettingsPage } from "./pages/SettingsPage.tsx";
+import { LoginPage } from "./pages/LoginPage.tsx";
+import { BottomNavigation } from "./components/BottomNavigation.tsx";
+import { Toaster } from "./components/ui/toaster.tsx";
+import { useAuthStore } from "./stores/authStore.ts";
+
+type AuthedView = "daily" | "chapter" | "yearPlan" | "settings";
+
+function App(): React.JSX.Element {
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthed = Boolean(accessToken);
+
+  const [currentView, setCurrentView] = useState<AuthedView>("daily");
+  const effectiveView = isAuthed ? currentView : "login";
+
+  const handleNavigate = (view: AuthedView): void => {
+    setCurrentView(view);
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <AppShell>
+        <div className="relative flex-1 overflow-hidden">
+          {effectiveView === "daily" ? <VerseReader /> : null}
+          {effectiveView === "chapter" ? <ChapterReader /> : null}
+          {effectiveView === "yearPlan" ? <YearPlanPage /> : null}
+          {effectiveView === "settings" ? <SettingsPage /> : null}
+          {effectiveView === "login" ? <LoginPage /> : null}
+        </div>
+        {effectiveView !== "login" ? (
+          <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
+        ) : null}
+      </AppShell>
+      <Toaster />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

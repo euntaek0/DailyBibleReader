@@ -1,0 +1,436 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* v2 primitives: typography/font-family */
+    --font-family-1: "Inter", "Pretendard Variable", "Pretendard", "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI",
+      sans-serif;
+    --font-family-2: "EB Garamond", Georgia, "Times New Roman", serif;
+    --font-sans: var(--font-family-1);
+    --font-display: var(--font-family-2);
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+    /* v2 primitives: typography/font-weight */
+    --font-weight-400: 400;
+    --font-weight-500: 500;
+    --font-weight-700: 700;
+
+    /* v2 primitives: typography/font-scale */
+    --font-scale-100: 10px;
+    --font-scale-200: 12px;
+    --font-scale-300: 14px;
+    --font-scale-400: 16px;
+    --font-scale-500: 18px;
+    --font-scale-600: 24px;
+    --font-scale-700: 32px;
+    --font-scale-800: 42px;
+    --font-scale-900: 56px;
+    --font-scale-1000: 75px;
+    --font-scale-1100: 100px;
+
+    /* v2 primitives: typography/length */
+    --line-length: 595px;
+
+    /* Compatibility aliases used by current UI */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.5rem;
+    --text-2xl: 2rem;
+    --text-3xl: 2.625rem;
+    --text-4xl: 3.5rem;
+
+    --text-reader-min: 1.125rem;
+    --text-reader-max: 1.5rem;
+
+    --leading-tight: 1.15;
+    --leading-snug: 1.3;
+    --leading-normal: 1.45;
+    --leading-relaxed: 1.65;
+
+    --tracking-tight: -0.02em;
+    --tracking-snug: -0.015em;
+    --tracking-normal: -0.01em;
+    --tracking-wide: 0.1em;
+
+    --weight-regular: var(--font-weight-400);
+    --weight-medium: var(--font-weight-500);
+    --weight-semibold: 600;
+    --weight-bold: var(--font-weight-700);
+
+    /* v2 primitives: spacing */
+    --spacing-1: 4px;
+    --spacing-2: 8px;
+    --spacing-3: 16px;
+    --spacing-4: 24px;
+    --spacing-5: 32px;
+    --spacing-6: 40px;
+    --spacing-7: 56px;
+    --spacing-8: 64px;
+    --spacing-9: 72px;
+    --spacing-10: 80px;
+    --spacing-11: 88px;
+    --spacing-12: 96px;
+    --spacing-13: 104px;
+
+    /* Compatibility spacing aliases used in tailwind config */
+    --space-0: 0rem;
+    --space-1: calc(var(--spacing-1) / 16px * 1rem);
+    --space-2: calc(var(--spacing-2) / 16px * 1rem);
+    --space-3: calc(var(--spacing-3) / 16px * 1rem);
+    --space-4: calc(var(--spacing-4) / 16px * 1rem);
+    --space-5: calc(var(--spacing-5) / 16px * 1rem);
+    --space-6: calc(var(--spacing-6) / 16px * 1rem);
+    --space-8: calc(var(--spacing-8) / 16px * 1rem);
+    --space-10: calc(var(--spacing-10) / 16px * 1rem);
+    --space-12: calc(var(--spacing-12) / 16px * 1rem);
+    --space-16: calc(var(--spacing-13) / 16px * 1rem);
+
+    /* v2 primitives: breakpoint */
+    --breakpoint-mobile: 360px;
+    --breakpoint-desktop: 1440px;
+
+    /* v2 primitives: radius */
+    --radius-1: 7px;
+    --radius-2: 10px;
+
+    /* v2 primitives: border */
+    --stroke: 1px;
+
+    /* Compatibility line widths */
+    --line-0: 0px;
+    --line-1: var(--stroke);
+    --line-2: 2px;
+    --line-4: 4px;
+
+    /* v2 primitives: colors/brand (iOS blue centered) */
+    --brand-100: 211 100% 94%;
+    --brand-200: 211 100% 88%;
+    --brand-300: 211 100% 80%;
+    --brand-400: 211 100% 70%;
+    --brand-500: 211 100% 52%;
+    --brand-600: 211 100% 44%;
+    --brand-700: 211 100% 36%;
+    --brand-800: 212 96% 26%;
+    --brand-900: 213 96% 16%;
+
+    /* v2 primitives: colors/neutral */
+    --neutral-50: 220 20% 98%;
+    --neutral-100: 220 15% 95.5%;
+    --neutral-200: 220 14% 90%;
+    --neutral-300: 220 11% 82%;
+    --neutral-400: 220 9% 70%;
+    --neutral-500: 220 9% 58%;
+    --neutral-600: 220 9% 45%;
+    --neutral-700: 220 10% 33%;
+    --neutral-800: 220 14% 23%;
+    --neutral-900: 220 18% 14%;
+    --neutral-950: 220 20% 9%;
+    --black: 0 0% 0%;
+    --white: 0 0% 100%;
+
+    /* v2 primitives: colors/signals */
+    --signal-default: 220 10% 33%;
+    --signal-default-light: 220 14% 90%;
+    --signal-warning: 24 96% 44%;
+    --signal-warning-light: 31 100% 89%;
+    --signal-success: 141 92% 28%;
+    --signal-success-light: 142 55% 89%;
+    --signal-error: 0 90% 43%;
+    --signal-error-light: 0 80% 91%;
+
+    /* Compatibility palettes for existing Tailwind utilities */
+    --primary-50: var(--brand-100);
+    --primary-100: var(--brand-100);
+    --primary-200: var(--brand-200);
+    --primary-300: var(--brand-300);
+    --primary-400: var(--brand-400);
+    --primary-500: var(--brand-500);
+    --primary-600: var(--brand-600);
+    --primary-700: var(--brand-700);
+    --primary-800: var(--brand-800);
+    --primary-900: var(--brand-900);
+    --primary-950: var(--brand-900);
+
+    --secondary-50: var(--neutral-50);
+    --secondary-100: var(--neutral-100);
+    --secondary-200: var(--neutral-200);
+    --secondary-300: var(--neutral-300);
+    --secondary-400: var(--neutral-400);
+    --secondary-500: var(--neutral-500);
+    --secondary-600: var(--neutral-600);
+    --secondary-700: var(--neutral-700);
+    --secondary-800: var(--neutral-800);
+    --secondary-900: var(--neutral-900);
+    --secondary-950: var(--neutral-950);
+
+    --red-50: var(--signal-error-light);
+    --red-100: var(--signal-error-light);
+    --red-200: var(--signal-error-light);
+    --red-300: var(--signal-error-light);
+    --red-400: var(--signal-error);
+    --red-500: var(--signal-error);
+    --red-600: var(--signal-error);
+    --red-700: var(--signal-error);
+    --red-800: var(--signal-error);
+    --red-900: var(--signal-error);
+    --red-950: var(--signal-error);
+
+    --yellow-50: var(--signal-warning-light);
+    --yellow-100: var(--signal-warning-light);
+    --yellow-200: var(--signal-warning-light);
+    --yellow-300: var(--signal-warning-light);
+    --yellow-400: var(--signal-warning);
+    --yellow-500: var(--signal-warning);
+    --yellow-600: var(--signal-warning);
+    --yellow-700: var(--signal-warning);
+    --yellow-800: var(--signal-warning);
+    --yellow-900: var(--signal-warning);
+    --yellow-950: var(--signal-warning);
+
+    --green-50: var(--signal-success-light);
+    --green-100: var(--signal-success-light);
+    --green-200: var(--signal-success-light);
+    --green-300: var(--signal-success-light);
+    --green-400: var(--signal-success);
+    --green-500: var(--signal-success);
+    --green-600: var(--signal-success);
+    --green-700: var(--signal-success);
+    --green-800: var(--signal-success);
+    --green-900: var(--signal-success);
+    --green-950: var(--signal-success);
+
+    /* Semantic aliases used by UI components */
+    --background: var(--neutral-50);
+    --foreground: var(--neutral-900);
+    --card: var(--white);
+    --card-foreground: var(--neutral-900);
+    --popover: var(--white);
+    --popover-foreground: var(--neutral-900);
+    --primary: var(--brand-500);
+    --primary-foreground: var(--white);
+    --secondary: var(--neutral-100);
+    --secondary-foreground: var(--neutral-800);
+    --muted: var(--neutral-100);
+    --muted-foreground: var(--neutral-700);
+    --accent: var(--brand-400);
+    --accent-foreground: var(--white);
+    --destructive: var(--signal-error);
+    --destructive-foreground: var(--white);
+    --border: var(--neutral-200);
+    --input: var(--neutral-300);
+    --ring: var(--brand-500);
+
+    --reader-bg: var(--white);
+    --highlight-read: var(--signal-success-light);
+    --highlight-focus: var(--brand-100);
+    --highlight-miss: var(--signal-warning-light);
+
+    --status-read: var(--signal-success);
+    --status-partial: var(--signal-warning);
+    --status-not-read: var(--signal-default);
+
+    --radius-sm: var(--radius-1);
+    --radius-md: var(--radius-2);
+    --radius-lg: calc(var(--radius-2) + 2px);
+    --radius-xl: calc(var(--radius-2) + 4px);
+    --radius-pill: 9999px;
+
+    --radius-control: var(--radius-md);
+    --radius-surface: var(--radius-xl);
+
+    --shadow-1: 0 2px 10px rgb(15 23 42 / 0.08);
+    --shadow-2: 0 10px 24px rgb(15 23 42 / 0.12);
+    --shadow-3: 0 20px 38px rgb(15 23 42 / 0.16);
+    --shadow-e0: none;
+    --shadow-e1: var(--shadow-1);
+    --shadow-e2: var(--shadow-2);
+    --shadow-e3: var(--shadow-3);
+
+    /* Effects */
+    --shadow-soft-diffusion: 0 16px 40px rgb(15 23 42 / 0.1);
+    --shadow-strong-diffusion: 0 22px 52px rgb(15 23 42 / 0.15);
+    --shadow-sunken: inset 0 1px 2px rgb(15 23 42 / 0.14), inset 0 0 0 1px hsl(var(--border) / 0.8);
+    --shadow-glow-primary: 0 0 0 1px hsl(var(--primary) / 0.35), 0 8px 24px hsl(var(--primary) / 0.25);
+    --shadow-glow-secondary: 0 0 0 1px hsl(var(--secondary) / 0.25), 0 8px 24px hsl(var(--secondary) / 0.18);
+    --shadow-neobrutal: 6px 6px 0 0 hsl(var(--neutral-900) / 1);
+
+    --duration-fast: 120ms;
+    --duration-base: 180ms;
+    --duration-slow: 260ms;
+    --duration-pulse: 2200ms;
+    --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+    --easing-emphasis: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --easing-exit: cubic-bezier(0.4, 0, 1, 1);
+
+    --line-height-reader: 1.54;
+    --line-height-ui: 1.45;
+
+    --topbar-height: 56px;
+    --bottom-nav-height: 68px;
+    --mic-dock-height: 108px;
+    --content-gutter: clamp(1rem, 4vw, calc(var(--spacing-4) / 16px * 1rem));
+  }
+
+  .dark {
+    --background: var(--neutral-950);
+    --foreground: var(--neutral-50);
+    --card: var(--neutral-900);
+    --card-foreground: var(--neutral-50);
+    --popover: var(--neutral-900);
+    --popover-foreground: var(--neutral-50);
+    --primary: var(--brand-400);
+    --primary-foreground: var(--white);
+    --secondary: var(--neutral-800);
+    --secondary-foreground: var(--neutral-100);
+    --muted: var(--neutral-800);
+    --muted-foreground: var(--neutral-300);
+    --accent: var(--brand-300);
+    --accent-foreground: var(--white);
+    --destructive: var(--signal-error);
+    --destructive-foreground: var(--white);
+    --border: var(--neutral-700);
+    --input: var(--neutral-700);
+    --ring: var(--brand-300);
+
+    --reader-bg: var(--neutral-900);
+    --highlight-read: 141 65% 22%;
+    --highlight-focus: 212 70% 28%;
+    --highlight-miss: 24 70% 24%;
+
+    --status-read: var(--signal-success-light);
+    --status-partial: var(--signal-warning-light);
+    --status-not-read: var(--neutral-100);
+  }
+
+  [data-contrast="high"] {
+    --background: var(--white);
+    --foreground: var(--black);
+    --card: var(--white);
+    --card-foreground: var(--black);
+    --primary: var(--brand-600);
+    --primary-foreground: var(--white);
+    --muted: var(--neutral-100);
+    --muted-foreground: var(--neutral-900);
+    --border: var(--neutral-700);
+    --reader-bg: var(--white);
+    --highlight-focus: var(--brand-200);
+    --highlight-read: var(--signal-success-light);
+  }
+
+  html[data-font-scale="small"] {
+    font-size: 15px;
+  }
+
+  html[data-font-scale="normal"] {
+    font-size: 16px;
+  }
+
+  html[data-font-scale="large"] {
+    font-size: 17px;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
+    line-height: var(--line-height-ui);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow: hidden;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .reader-surface {
+    @apply rounded-xl border border-border/75 bg-reader-bg;
+  }
+
+  .reader-column {
+    @apply mx-auto w-full max-w-reader;
+  }
+
+  .reader-word {
+    @apply rounded-md transition-colors duration-base ease-standard;
+  }
+
+  .reader-word-read {
+    @apply bg-reader-read px-1 py-0.5 text-status-read;
+  }
+
+  .reader-word-focus {
+    @apply bg-reader-focus px-1 py-0.5 text-foreground ring-1 ring-primary/40;
+  }
+
+  .reader-word-miss {
+    @apply bg-reader-miss px-1 py-0.5;
+  }
+
+  .app-bottom-nav {
+    transition: transform var(--duration-slow) var(--easing-standard), opacity var(--duration-base) var(--easing-standard);
+  }
+
+  .topbar-shadow {
+    box-shadow: 0 1px 0 hsl(var(--border) / 0.5);
+  }
+
+  .glass-surface {
+    @apply bg-background/75 backdrop-blur-xl;
+  }
+
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .page-gutter {
+    padding-left: var(--content-gutter);
+    padding-right: var(--content-gutter);
+  }
+
+  .mic-dock {
+    bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom) + 0.2rem);
+    transition: bottom var(--duration-slow) var(--easing-standard);
+  }
+
+  html[data-listening="true"] .app-bottom-nav {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  html[data-listening="true"] .mic-dock {
+    bottom: calc(env(safe-area-inset-bottom) + 0.35rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
