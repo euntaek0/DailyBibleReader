@@ -28,6 +28,7 @@ const preview: Preview = {
       const isFoundationStory = context.title?.startsWith("Foundation/");
       const isWideUiStory = context.title === "UI/Button" || context.title === "UI/Badge" || context.title === "UI/Board Row";
       const frame: StoryFrame = explicitFrame ?? (isFoundationStory || isWideUiStory ? "wide" : "mobile");
+      const isConstrainedFrame = frame === "mobile";
 
       const maxWidth = frame === "wide" ? "1400px" : frame === "full" ? "100%" : "460px";
       const outerPadding = frame === "wide" ? "24px" : "16px";
@@ -50,8 +51,8 @@ const preview: Preview = {
               border: frame === "mobile" ? "1px solid hsl(var(--border))" : "none",
               borderRadius: frame === "mobile" ? "20px" : "0px",
               overflowX: frame === "wide" ? "auto" : "hidden",
-              overflowY: "auto",
-              maxHeight: "calc(100dvh - 32px)",
+              overflowY: isConstrainedFrame ? "auto" : "visible",
+              maxHeight: isConstrainedFrame ? "calc(100dvh - 32px)" : "none",
               WebkitOverflowScrolling: "touch",
               overscrollBehavior: "contain",
               background: "hsl(var(--background))",

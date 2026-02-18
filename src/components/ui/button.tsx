@@ -78,9 +78,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <>
             <span className="opacity-0">{label}</span>
             <span className="absolute inset-0 flex items-center justify-center gap-1.5" aria-hidden="true">
-              <span className="h-1.5 w-1.5 rounded-full bg-current/80" />
-              <span className="h-1.5 w-1.5 rounded-full bg-current/56" />
-              <span className="h-1.5 w-1.5 rounded-full bg-current/36" />
+              <span className="h-2 w-2 rounded-full bg-current animate-pulse motion-reduce:animate-none" />
+              <span className="h-2 w-2 rounded-full bg-current/75 animate-pulse [animation-delay:120ms] motion-reduce:animate-none" />
+              <span className="h-2 w-2 rounded-full bg-current/50 animate-pulse [animation-delay:240ms] motion-reduce:animate-none" />
             </span>
             <span className="sr-only">로딩 중</span>
           </>

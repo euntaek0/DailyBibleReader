@@ -185,8 +185,9 @@ export function ReaderView({
       <div className="flex h-full flex-col">
         <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="본문을 불러오는 중" variant="section" appearance="translucent" />
         <PageContainer withBottomInset>
-          <div className="reader-column flex min-h-[52vh] items-center justify-center rounded-xl border border-border/75 bg-card text-sm text-muted-foreground">
-            본문을 불러오고 있어요…
+          <div className="reader-column flex min-h-[52vh] flex-col items-center justify-center gap-3 text-center">
+            <div className="h-9 w-9 animate-spin rounded-full border-2 border-border/70 border-t-brand-500" aria-hidden="true" />
+            <p className="text-sm text-muted-foreground">본문을 불러오고 있어요…</p>
           </div>
         </PageContainer>
       </div>
@@ -198,7 +199,7 @@ export function ReaderView({
       <div className="flex h-full flex-col">
         <TopBar title={`${bookName} ${chapter}장`} onBack={onBack} subtitle="불러오기 실패" variant="section" appearance="translucent" />
         <PageContainer withBottomInset>
-          <div className="reader-column space-y-4 rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
+          <div className="reader-column space-y-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
             <p className="text-sm text-foreground">{error}</p>
             <Button variant="outline" onClick={onBack}>
               선택 화면으로 돌아가기
@@ -235,7 +236,10 @@ export function ReaderView({
 
       <PageContainer withBottomInset withMicDockInset className={cn(isListening ? "pt-2" : "pt-3")}>
         <div ref={scrollRef} className="reader-column space-y-4">
-          <section className="space-y-3 rounded-2xl border border-border/75 bg-card p-4" aria-label="장 진행률">
+          <section
+            className="space-y-3 rounded-xl border border-border/70 bg-card/95 p-4 shadow-[0_8px_24px_-22px_hsl(var(--foreground)/0.45)]"
+            aria-label="장 진행률"
+          >
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-foreground">장 진행률</p>
               {currentMatchResult ? <StatusBadge status={currentMatchResult.status} score={currentMatchResult.score} /> : null}
@@ -258,11 +262,11 @@ export function ReaderView({
                   key={verse.index}
                   id={`verse-${index}`}
                   className={cn(
-                    "rounded-2xl border p-4 transition-all duration-base ease-standard",
-                    isActive && "border-primary/45 bg-brand-100/45 shadow-1",
+                    "rounded-xl border p-3.5 transition-all duration-base ease-standard",
+                    isActive && "border-brand-400/60 bg-brand-100/55 shadow-[0_10px_24px_-18px_hsl(var(--brand-500)/0.6)]",
                     isCompleted && "border-status-read/30 bg-status-read/8",
-                    !isActive && !isCompleted && "border-border/75 bg-card",
-                    isListening && !isActive && !isCompleted && "opacity-70"
+                    !isActive && !isCompleted && "border-border/70 bg-card/95",
+                    isListening && !isActive && !isCompleted && "opacity-80"
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -294,7 +298,7 @@ export function ReaderView({
                   ? "브라우저 권한 설정에서 마이크를 허용해 주세요."
                   : undefined
             }
-            className="mx-auto w-full max-w-[18rem]"
+            className="mx-auto w-full max-w-[16rem]"
           />
         </div>
       </div>

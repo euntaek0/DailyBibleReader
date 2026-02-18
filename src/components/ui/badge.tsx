@@ -20,15 +20,15 @@ const badgeVariants = cva(
         success: "bg-signals-success text-white",
 
         primaryWeak: "bg-brand-100 text-brand-700",
-        neutralWeak: "bg-neutral-100 text-neutral-700",
-        signalWeak: "bg-signals-default-light text-signals-default",
+        neutralWeak: "bg-neutral-100 text-neutral-800",
+        signalWeak: "bg-signals-default-light text-neutral-800",
         warningWeak: "bg-signals-warning-light text-signals-warning",
         dangerWeak: "bg-signals-error-light text-signals-error",
         successWeak: "bg-signals-success-light text-signals-success",
 
         read: "bg-signals-success-light text-signals-success",
         partial: "bg-signals-warning-light text-signals-warning",
-        notread: "bg-neutral-100 text-neutral-700",
+        notread: "bg-neutral-100 text-neutral-800",
       },
       size: {
         sm: "h-6 px-2.5 text-[11px]",
